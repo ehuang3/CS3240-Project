@@ -1,7 +1,7 @@
 package Generator;
 
 public class Token {
-	enum op_code {
+	public enum op_code {
 		left_paren,
 		right_paren,
 		or,
@@ -9,6 +9,7 @@ public class Token {
 		plus,
 		id,
 		re_char,
+		re_escape,
 		epsilon,
 		left_brac,
 		right_brac,
@@ -16,7 +17,8 @@ public class Token {
 		range,			// "-"
 		exclude,		// "^"
 		cls_char,
-		in				// "IN"
+		in,				// "IN"
+		eoi
 	}
 	
 	public op_code operand;
