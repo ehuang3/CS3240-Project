@@ -3,7 +3,7 @@ package Generator.NFA;
 import Generator.Character.CharacterClass;
 
 /**
- * Represents a transition in a NFA. Supports epsilon transitions.
+ * A transition in a NFA. Supports epsilon transitions.
  * 
  * @author eric
  *

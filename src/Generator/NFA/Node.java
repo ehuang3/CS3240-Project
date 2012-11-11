@@ -5,6 +5,12 @@ import java.util.List;
 
 import Generator.Character.CharacterClass;
 
+/**
+ * A node in a NFA.
+ * 
+ * @author eric
+ *
+ */
 public class Node {
 	boolean terminal;
 	List<Transition> adj;
