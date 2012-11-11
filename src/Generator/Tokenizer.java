@@ -1,5 +1,9 @@
 package Generator;
 
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Scanner;
+
 import Generator.Token.op_code;
 
 /** 
@@ -13,6 +17,7 @@ public class Tokenizer {
 	int pos;
 	boolean potentialEpsilon; 	// Alerts the tokenizer of incoming epsilon match
 	boolean regexMode;
+	List<String> ids;
 	
 	static String[] keywords = {
 								 "(", ")", "|", "*", "+", "$", "\\",	// Regex Keywords
@@ -26,6 +31,7 @@ public class Tokenizer {
 		pos = 0;
 		potentialEpsilon = true;
 		regexMode = true;
+		ids = new LinkedList<String>();
 	}
 	
 	public int pos() {
@@ -37,8 +43,10 @@ public class Tokenizer {
 		int _pos = pos;
 		boolean _potentialEpsilon = potentialEpsilon;
 		boolean _regexMode = regexMode;
+		
 		// Peek ahead
 		Token nextToken = next();
+		
 		// Restore state
 		pos = _pos;
 		potentialEpsilon = _potentialEpsilon;
@@ -49,7 +57,7 @@ public class Tokenizer {
 	
 	public Token next() {
 		if(pos == code.length()) {
-			return null;
+			return new Token(op_code.eoi, "");
 		}
 		// Consume whitespace
 		skip();
@@ -61,7 +69,7 @@ public class Tokenizer {
 			case "(" :
 				if(regexMode) {
 					potentialEpsilon = true;
-					token = new Token(op_code.left_paren, "");
+					token = new Token(op_code.left_paren, op);
 					pos++;
 					break;
 				}
@@ -71,7 +79,7 @@ public class Tokenizer {
 						potentialEpsilon = false;
 						token = new Token(op_code.epsilon, "");
 					} else {
-						token = new Token(op_code.right_paren, "");
+						token = new Token(op_code.right_paren, op);
 						pos++;
 					}
 					break;
@@ -83,19 +91,20 @@ public class Tokenizer {
 						token = new Token(op_code.epsilon, "");
 					} else {
 						potentialEpsilon = true;
-						token = new Token(op_code.or, "");
+						token = new Token(op_code.or, op);
+						pos++;
 					}
 					break;
 				}
 			case "*" :
 				if(regexMode) {
-					token = new Token(op_code.star, "");
+					token = new Token(op_code.star, op);
 					pos++;
 					break;
 				}
 			case "+" :
 				if(regexMode) {
-					token = new Token(op_code.plus, "");
+					token = new Token(op_code.plus, op);
 					pos++;
 					break;
 				}
@@ -109,34 +118,34 @@ public class Tokenizer {
 			case "[" :
 				if(regexMode) {
 					regexMode = false;
-					token = new Token(op_code.left_brac, "");
+					token = new Token(op_code.left_brac, op);
 					pos++;
 					break;
 				}
 			case "]" :
 				if(!regexMode) {
 					regexMode = true;
-					token = new Token(op_code.right_brac, "");
+					token = new Token(op_code.right_brac, op);
 					pos++;
 					break;
 				}
 			case "." :
 				if(regexMode) {
-					token = new Token(op_code.match_all, "");
+					token = new Token(op_code.match_all, op);
 					pos++;
 					break;
 				}
 			case "-" :
-				token = new Token(op_code.range, "");
+				token = new Token(op_code.range, op);
 				pos++;
 				break;
 			case "^" :
-				token = new Token(op_code.exclude, "");
+				token = new Token(op_code.exclude, op);
 				pos++;
 				break;
 			case "IN" :
 				if(regexMode) {
-					token = new Token(op_code.in, "");
+					token = new Token(op_code.in, op);
 					pos += 2;
 				} else {
 					token = new Token(op_code.cls_char, "I");
@@ -145,10 +154,11 @@ public class Tokenizer {
 				break;
 			case "\\" :
 				if(regexMode) {
-					token = new Token(op_code.re_char, code.substring(pos+1,pos+2));
+					token = new Token(op_code.re_escape, code.substring(pos+1,pos+2));
 				} else {
 					token = new Token(op_code.cls_char, code.substring(pos+1,pos+2));
 				}
+				potentialEpsilon = false;
 				pos += 2;
 				break;
 			default :
@@ -157,8 +167,9 @@ public class Tokenizer {
 				} else {
 					token = new Token(op_code.cls_char, op);
 				}
+				potentialEpsilon = false;
 				pos++;
-		}		
+		}
 		// Consume trailing whitespace
 		skip();
 		return token;
@@ -183,16 +194,32 @@ public class Tokenizer {
 	}
 	
 	private String findId() {
-		return null;
+		// Find existing match
+		String id = "";
+		for(String i : ids) {
+			int match = code.indexOf(i, pos);
+			if(match == pos) {
+				id = i;
+			}
+		}
+		// Create new identifier greedily
+		if(id.isEmpty()) {
+			Scanner S = new Scanner(code.substring(pos));
+			id = S.next();
+			S.close();
+			// Add to list of ids
+			ids.add(id);
+		}
+		
+		return id;
 	}
 	
 	private String nextKeyword() {
-		String keyword = "";
-		int min_dist = code.length();
+		String keyword = code.substring(pos,pos+1);
+		// For matching keywords with length > 1
 		for(String k : keywords) {
 			int dist = code.substring(pos).indexOf(k);
-			if(dist >= 0 && dist < min_dist) {
-				min_dist = dist;
+			if(dist == 0) {
 				keyword = k;
 			}
 		}

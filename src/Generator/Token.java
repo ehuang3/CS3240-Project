@@ -16,7 +16,7 @@ public class Token {
 		match_all,		// "."
 		range,			// "-"
 		exclude,		// "^"
-		cls_char,
+		cls_char,		// 
 		in,				// "IN"
 		eoi
 	}
