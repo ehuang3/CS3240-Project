@@ -16,20 +16,16 @@ public class Tokenizer {
 	
 	static String[] keywords = {
 								 "(", ")", "|", "*", "+", "$", "\\",	// Regex Keywords
-								 ".", "[", "]", "^", "-"				// CharacterClass Keywords
+								 ".", "[", "]", "^", "-", "IN"			// CharacterClass Keywords
 							   };
 	
 	static String[] skipper = { " ", "\t", "\n", "\r" };
 	
 	public Tokenizer(String in) {
-		this(in, true);
-	}
-	
-	public Tokenizer(String in, boolean rMode) {
 		code = in;
 		pos = 0;
 		potentialEpsilon = true;
-		regexMode = rMode;
+		regexMode = true;
 	}
 	
 	public int pos() {
@@ -37,8 +33,18 @@ public class Tokenizer {
 	}
 	
 	public Token peek() {
+		// Save state
+		int _pos = pos;
+		boolean _potentialEpsilon = potentialEpsilon;
+		boolean _regexMode = regexMode;
+		// Peek ahead
+		Token nextToken = next();
+		// Restore state
+		pos = _pos;
+		potentialEpsilon = _potentialEpsilon;
+		regexMode = _regexMode;
 		
-		return null;
+		return nextToken;
 	}
 	
 	public Token next() {
@@ -48,54 +54,110 @@ public class Tokenizer {
 		// Consume whitespace
 		skip();
 		// Next keyword
-		String op = code.substring(pos,pos+1);
+		String op = nextKeyword();
 		// Parse token
 		Token token;
 		switch (op) {
 			case "(" :
-				potentialEpsilon = true;
-				token = new Token(op_code.left_paren, "");
+				if(regexMode) {
+					potentialEpsilon = true;
+					token = new Token(op_code.left_paren, "");
+					pos++;
+					break;
+				}
+			case ")" :
+				if(regexMode) {
+					if(potentialEpsilon) {
+						potentialEpsilon = false;
+						token = new Token(op_code.epsilon, "");
+					} else {
+						token = new Token(op_code.right_paren, "");
+						pos++;
+					}
+					break;
+				}
+			case "|" :
+				if(regexMode) {
+					if(potentialEpsilon) {
+						potentialEpsilon = false;
+						token = new Token(op_code.epsilon, "");
+					} else {
+						potentialEpsilon = true;
+						token = new Token(op_code.or, "");
+					}
+					break;
+				}
+			case "*" :
+				if(regexMode) {
+					token = new Token(op_code.star, "");
+					pos++;
+					break;
+				}
+			case "+" :
+				if(regexMode) {
+					token = new Token(op_code.plus, "");
+					pos++;
+					break;
+				}
+			case "$" :
+				if(regexMode) {
+					String id = findId();
+					token = new Token(op_code.id, id);
+					pos += id.length();
+					break;
+				}
+			case "[" :
+				if(regexMode) {
+					regexMode = false;
+					token = new Token(op_code.left_brac, "");
+					pos++;
+					break;
+				}
+			case "]" :
+				if(!regexMode) {
+					regexMode = true;
+					token = new Token(op_code.right_brac, "");
+					pos++;
+					break;
+				}
+			case "." :
+				if(regexMode) {
+					token = new Token(op_code.match_all, "");
+					pos++;
+					break;
+				}
+			case "-" :
+				token = new Token(op_code.range, "");
 				pos++;
 				break;
-			case ")" :
-				if(potentialEpsilon) {
-					potentialEpsilon = false;
-					token = new Token(op_code.epsilon, "");
+			case "^" :
+				token = new Token(op_code.exclude, "");
+				pos++;
+				break;
+			case "IN" :
+				if(regexMode) {
+					token = new Token(op_code.in, "");
+					pos += 2;
 				} else {
-					token = new Token(op_code.right_paren, "");
+					token = new Token(op_code.cls_char, "I");
 					pos++;
 				}
 				break;
-			case "|" :
-				if(potentialEpsilon) {
-					potentialEpsilon = false;
-					token = new Token(op_code.epsilon, "");
-				} else {
-					potentialEpsilon = true;
-					token = new Token(op_code.or, "");
-				}
-				break;
-			case "*" :
-				token = new Token(op_code.star, "");
-				pos++;
-				break;
-			case "+" :
-				token = new Token(op_code.plus, "");
-				pos++;
-				break;
-			case "$" :
-				String id = findId();
-				token = new Token(op_code.id, id);
-				pos += id.length();
-				break;
 			case "\\" :
-				token = new Token(op_code.re_char, code.substring(pos+1,pos+2));
+				if(regexMode) {
+					token = new Token(op_code.re_char, code.substring(pos+1,pos+2));
+				} else {
+					token = new Token(op_code.cls_char, code.substring(pos+1,pos+2));
+				}
 				pos += 2;
 				break;
 			default :
-				token = new Token(op_code.re_char, op);
+				if(regexMode) {
+					token = new Token(op_code.re_char, op);
+				} else {
+					token = new Token(op_code.cls_char, op);
+				}
 				pos++;
-				
 		}		
 		// Consume trailing whitespace
 		skip();
@@ -125,7 +187,16 @@ public class Tokenizer {
 	}
 	
 	private String nextKeyword() {
-		return null;
+		String keyword = "";
+		int min_dist = code.length();
+		for(String k : keywords) {
+			int dist = code.substring(pos).indexOf(k);
+			if(dist >= 0 && dist < min_dist) {
+				min_dist = dist;
+				keyword = k;
+			}
+		}
+		return keyword;
 	}
 	
 	public void reset() {
