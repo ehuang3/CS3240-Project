@@ -1,5 +1,8 @@
 package Generator.NFA;
 
+import java.util.LinkedList;
+import java.util.Queue;
+
 import Generator.Character.CharacterClass;
 
 /**
@@ -72,5 +75,36 @@ public class NFA {
 		N.start.addEpsilonTransition(N.end);
 		
 		return N;
+	}
+	
+	public String toString() {
+		String out = "";
+		
+		Queue<Node> Q = new LinkedList<Node>();
+		Q.add(start);
+		while(!Q.isEmpty()) {
+			Node u = Q.poll();
+			u.color = 1;
+			out += "Node " + u;
+			for(Transition e : u.adjacencyList()) {
+				if(e.end.color == 0) {
+					Q.add(e.end);
+				}
+				out += "\n\t" + "--> " + e.end;
+			}
+		}
+		
+		// Uncolor
+		Q.add(start);
+		while(!Q.isEmpty()) {
+			Node u = Q.poll();
+			u.color = 0;
+			for(Transition e : u.adjacencyList()) {
+				if(e.end.color == 1) {
+					Q.add(e.end);
+				}
+			}
+		}
+		return out;
 	}
 }

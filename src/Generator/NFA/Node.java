@@ -15,6 +15,10 @@ public class Node {
 	boolean terminal;
 	List<Transition> adj;
 	
+	static int number = 0;
+	int color;
+	String name;
+	
 	public Node() {
 		this(false);
 	}
@@ -22,6 +26,9 @@ public class Node {
 	public Node(boolean isFinal) {
 		terminal = isFinal;
 		adj = new LinkedList<Transition>();
+		
+		name = String.valueOf(++number);
+		color = 0;
 	}
 	
 	public boolean isFinal() {
@@ -38,5 +45,9 @@ public class Node {
 	
 	public void addEpsilonTransition(Node end) {
 		adj.add(new Transition(this, end));
+	}
+	
+	public String toString() {
+		return name;
 	}
 }

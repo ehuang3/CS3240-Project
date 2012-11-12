@@ -27,4 +27,8 @@ public class Token {
 		operand = o;
 		value = v;
 	}
+	
+	public String toString() {
+		return operand + ": " + value;
+	}
 }

@@ -1,21 +1,26 @@
 package Generator.NFA;
 
-import java.util.List;
+import java.util.Map;
 
+import Generator.Tokenizer;
 import Generator.Character.CharacterClass;
 
 public class NFAFactory {
-	List<CharacterClass> charClassList;
+	Map<String, CharacterClass> charClass;
+	Tokenizer T;
 	
-	public NFAFactory(List<CharacterClass> list) {
-		charClassList = list;
+	public NFAFactory() {
 	}
 	
-	public NFA parse(String def) {
-		return null;
+	public void charClass(Map<String, CharacterClass> map) {
+		charClass = map;
 	}
 	
-	public NFA parseRegex(String regex) {
+	public void tokenizer(Tokenizer t) {
+		T = t;
+	}
+	
+	public NFA build(String in) {
 		return null;
 	}
 }

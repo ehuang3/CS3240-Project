@@ -25,6 +25,7 @@ public class TokenizerTest {
 		Tokenizer T = new Tokenizer(in);
 		assertEquals(T.next().operand, op_code.epsilon);
 		assertEquals(T.next().operand, op_code.or);
+		assertEquals(T.next().operand, op_code.epsilon);
 		assertEquals(T.next().operand, op_code.eoi);
 		
 		in = "a|b";
@@ -151,10 +152,10 @@ public class TokenizerTest {
 	
 	@Test
 	public void testEscape() {
-		String re_esc = "\\*\\ \\\\\\+\\?\\|\\[\\]\\(\\)\\.\\'\\\"";
+		String re_esc = "\\*\\ \\\\\\+\\?\\|\\[\\]\\(\\)\\.\\'\\\"\\$";
 		String cls_esc = "[\\\\\\^\\-\\[\\]]";
 		String re_no_esc = "^-";
-		String cls_no_esc = "[ *+?|().'\"]";
+		String cls_no_esc = "[ *+?|().'\"$IN]";
 		
 		System.out.println(re_esc);
 		System.out.println(cls_esc);
@@ -188,6 +189,8 @@ public class TokenizerTest {
 		assertEquals("'", T.next().value);
 		assertEquals(op_code.re_char, T.peek().operand);
 		assertEquals("\"", T.next().value);
+		assertEquals(op_code.re_char, T.peek().operand);
+		assertEquals("$", T.next().value);
 		
 		T.tokenize(cls_esc);
 		T.next();
@@ -200,6 +203,8 @@ public class TokenizerTest {
 		assertEquals(op_code.cls_char, T.peek().operand);
 		assertEquals("[", T.next().value);
 		assertEquals(op_code.cls_char, T.peek().operand);
+		assertEquals("]", T.next().value);
+		assertEquals(op_code.right_brac, T.peek().operand);
 		assertEquals("]", T.next().value);
 		
 		T.tokenize(re_no_esc);
@@ -230,6 +235,14 @@ public class TokenizerTest {
 		assertEquals("'", T.next().value);
 		assertEquals(op_code.cls_char, T.peek().operand);
 		assertEquals("\"", T.next().value);
+		assertEquals(op_code.cls_char, T.peek().operand);
+		assertEquals("$", T.next().value);
+		assertEquals(op_code.cls_char, T.peek().operand);
+		assertEquals("I", T.next().value);
+		assertEquals(op_code.cls_char, T.peek().operand);
+		assertEquals("N", T.next().value);
+		assertEquals(op_code.right_brac, T.peek().operand);
+		assertEquals("]", T.next().value);
 	}
 	
 	@Test
@@ -259,6 +272,103 @@ public class TokenizerTest {
 		assertEquals("^", T.next().value);
 		assertEquals(op_code.right_brac, T.peek().operand);
 		assertEquals("]", T.next().value);
+		
+		// [ *+?|().'"]
+		T.tokenize("[ ]");
+		assertEquals(op_code.left_brac, T.peek().operand);
+		assertEquals("[", T.next().value);
+		assertEquals(op_code.cls_char, T.peek().operand);
+		assertEquals(" ", T.next().value);
+		assertEquals(op_code.right_brac, T.peek().operand);
+		assertEquals("]", T.next().value);
+		
+		T.tokenize("[*]");
+		assertEquals(op_code.left_brac, T.peek().operand);
+		assertEquals("[", T.next().value);
+		assertEquals(op_code.cls_char, T.peek().operand);
+		assertEquals("*", T.next().value);
+		assertEquals(op_code.right_brac, T.peek().operand);
+		assertEquals("]", T.next().value);
+		
+		T.tokenize("[+]");
+		assertEquals(op_code.left_brac, T.peek().operand);
+		assertEquals("[", T.next().value);
+		assertEquals(op_code.cls_char, T.peek().operand);
+		assertEquals("+", T.next().value);
+		assertEquals(op_code.right_brac, T.peek().operand);
+		assertEquals("]", T.next().value);
+		
+		T.tokenize("[?]");
+		assertEquals(op_code.left_brac, T.peek().operand);
+		assertEquals("[", T.next().value);
+		assertEquals(op_code.cls_char, T.peek().operand);
+		assertEquals("?", T.next().value);
+		assertEquals(op_code.right_brac, T.peek().operand);
+		assertEquals("]", T.next().value);
+		
+		T.tokenize("[|]");
+		assertEquals(op_code.left_brac, T.peek().operand);
+		assertEquals("[", T.next().value);
+		assertEquals(op_code.cls_char, T.peek().operand);
+		assertEquals("|", T.next().value);
+		assertEquals(op_code.right_brac, T.peek().operand);
+		assertEquals("]", T.next().value);
+		
+		T.tokenize("[(]");
+		assertEquals(op_code.left_brac, T.peek().operand);
+		assertEquals("[", T.next().value);
+		assertEquals(op_code.cls_char, T.peek().operand);
+		assertEquals("(", T.next().value);
+		assertEquals(op_code.right_brac, T.peek().operand);
+		assertEquals("]", T.next().value);
+		
+		T.tokenize("[)]");
+		assertEquals(op_code.left_brac, T.peek().operand);
+		assertEquals("[", T.next().value);
+		assertEquals(op_code.cls_char, T.peek().operand);
+		assertEquals(")", T.next().value);
+		assertEquals(op_code.right_brac, T.peek().operand);
+		assertEquals("]", T.next().value);
+		
+		T.tokenize("[.]");
+		assertEquals(op_code.left_brac, T.peek().operand);
+		assertEquals("[", T.next().value);
+		assertEquals(op_code.cls_char, T.peek().operand);
+		assertEquals(".", T.next().value);
+		assertEquals(op_code.right_brac, T.peek().operand);
+		assertEquals("]", T.next().value);
+		
+		T.tokenize("[']");
+		assertEquals(op_code.left_brac, T.peek().operand);
+		assertEquals("[", T.next().value);
+		assertEquals(op_code.cls_char, T.peek().operand);
+		assertEquals("'", T.next().value);
+		assertEquals(op_code.right_brac, T.peek().operand);
+		assertEquals("]", T.next().value);
+		
+		T.tokenize("[\"]");
+		assertEquals(op_code.left_brac, T.peek().operand);
+		assertEquals("[", T.next().value);
+		assertEquals(op_code.cls_char, T.peek().operand);
+		assertEquals("\"", T.next().value);
+		assertEquals(op_code.right_brac, T.peek().operand);
+		assertEquals("]", T.next().value);
+	}
+	
+	@Test
+	public void testRegex() {
+		String cls = "$ZOOK [1-22-90-4&$#@1a-zZ-Z]\n" +
+					 "$GURG [^0123zwoqeidj] IN $ZOOK\n";
+		String regex = "$BABEL   (a|A)*.($ZOOK)+[^554] IN [[11-9\\]20](])(\\)\\$)$GURG|(|(|))|";
+		
+		Tokenizer T = new Tokenizer(cls);
+		while(T.hasNext()) {
+			System.out.println(T.next());
+		}
+		T.tokenize(regex);
+		while(T.hasNext()) {
+			System.out.println(T.next());
+		}
 	}
 
 	@Test
