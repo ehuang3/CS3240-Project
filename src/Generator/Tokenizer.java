@@ -62,7 +62,7 @@ public class Tokenizer {
 		
 		// Peek ahead
 		Token nextToken = null;
-		while(n-- >= 0) {
+		while(n-- > 0) {
 			nextToken = next();
 		}
 		
