@@ -38,6 +38,22 @@ public class Tokenizer {
 		return pos;
 	}
 	
+	public List<String> ids() {
+		return ids;
+	}
+	
+	public void tokenize(String in) {
+		code = in;
+		reset();
+	}
+	
+	public void reset() {
+		pos = 0;
+		potentialEpsilon = true;
+		regexMode = true;
+//		ids.clear();  //<-- Couldn't hurt to save these
+	}
+	
 	public Token peek() {
 		// Save state
 		int _pos = pos;
@@ -71,8 +87,11 @@ public class Tokenizer {
 					potentialEpsilon = true;
 					token = new Token(op_code.left_paren, op);
 					pos++;
-					break;
+				} else {
+					token = new Token(op_code.cls_char, op);
+					pos++;
 				}
+				break;
 			case ")" :
 				if(regexMode) {
 					if(potentialEpsilon) {
@@ -82,8 +101,11 @@ public class Tokenizer {
 						token = new Token(op_code.right_paren, op);
 						pos++;
 					}
-					break;
+				} else {
+					token = new Token(op_code.cls_char, op);
+					pos++;
 				}
+				break;
 			case "|" :
 				if(regexMode) {
 					if(potentialEpsilon) {
@@ -94,54 +116,86 @@ public class Tokenizer {
 						token = new Token(op_code.or, op);
 						pos++;
 					}
-					break;
+				} else {
+					token = new Token(op_code.cls_char, op);
+					pos++;
 				}
+				break;
 			case "*" :
 				if(regexMode) {
 					token = new Token(op_code.star, op);
 					pos++;
-					break;
+				} else {
+					token = new Token(op_code.cls_char, op);
+					pos++;
 				}
+				break;
 			case "+" :
 				if(regexMode) {
 					token = new Token(op_code.plus, op);
 					pos++;
-					break;
+				} else {
+					token = new Token(op_code.cls_char, op);
+					pos++;
 				}
+				break;
 			case "$" :
 				if(regexMode) {
 					String id = findId();
 					token = new Token(op_code.id, id);
 					pos += id.length();
-					break;
+				} else {
+					token = new Token(op_code.cls_char, op);
+					pos++;
 				}
+				break;
 			case "[" :
 				if(regexMode) {
 					regexMode = false;
+					potentialEpsilon = true;
 					token = new Token(op_code.left_brac, op);
 					pos++;
 					break;
 				}
 			case "]" :
 				if(!regexMode) {
-					regexMode = true;
-					token = new Token(op_code.right_brac, op);
-					pos++;
+					if(potentialEpsilon) {
+						token = new Token(op_code.epsilon, "");
+						potentialEpsilon = false;
+					} else {
+						regexMode = true;
+						token = new Token(op_code.right_brac, op);
+						pos++;
+					}
 					break;
 				}
 			case "." :
 				if(regexMode) {
 					token = new Token(op_code.match_all, op);
 					pos++;
-					break;
+				} else {
+					token = new Token(op_code.cls_char, op);
+					pos++;
 				}
+				break;
 			case "-" :
-				token = new Token(op_code.range, op);
-				pos++;
+				if(!regexMode) {
+					token = new Token(op_code.range, op);
+					pos++;
+				} else {
+					token = new Token(op_code.re_char, op);
+					pos++;
+				}
 				break;
 			case "^" :
-				token = new Token(op_code.exclude, op);
-				pos++;
+				if(!regexMode) {
+					potentialEpsilon = false;
+					token = new Token(op_code.exclude, op);
+					pos++;
+				} else {
+					token = new Token(op_code.re_char, op);
+					pos++;
+				}
 				break;
 			case "IN" :
 				if(regexMode) {
@@ -154,7 +208,7 @@ public class Tokenizer {
 				break;
 			case "\\" :
 				if(regexMode) {
-					token = new Token(op_code.re_escape, code.substring(pos+1,pos+2));
+					token = new Token(op_code.re_char, code.substring(pos+1,pos+2));
 				} else {
 					token = new Token(op_code.cls_char, code.substring(pos+1,pos+2));
 				}
@@ -176,7 +230,7 @@ public class Tokenizer {
 	}
 	
 	private void skip() {
-		if(pos == code.length()) {
+		if(pos == code.length() || !regexMode) {
 			return;
 		} else if(isSpace(code.substring(pos,pos+1))) {
 			pos += 1;
@@ -224,9 +278,5 @@ public class Tokenizer {
 			}
 		}
 		return keyword;
-	}
-	
-	public void reset() {
-		pos = 0;
 	}
 }

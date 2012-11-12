@@ -9,7 +9,6 @@ public class Token {
 		plus,
 		id,
 		re_char,
-		re_escape,
 		epsilon,
 		left_brac,
 		right_brac,
