@@ -1,7 +1,6 @@
 package Generator.NFA;
 
-import java.util.LinkedList;
-import java.util.Queue;
+import java.util.Stack;
 
 import Generator.Character.CharacterClass;
 
@@ -13,23 +12,35 @@ import Generator.Character.CharacterClass;
  *
  */
 public class NFA {
+	String name;
 	Node start;
 	Node end;
+	private boolean epsilonNFA;
 	
 	private NFA() {
 		start = new Node();
 		end = new Node();
+		end.setFinal(true);
 	}
 	
 	public NFA(CharacterClass match) {
-		start = new Node();
-		end = new Node();
-		Node left = new Node();
-		Node right = new Node();
-		
-		start.addEpsilonTransition(left);
-		left.addTransition(right, match);
-		right.addEpsilonTransition(end);
+		this();
+		start.addTransition(end, match);
+	}
+	
+	public static NFA EpsilonNFA() {
+		NFA N = new NFA();
+		N.start.addEpsilonTransition(N.end);
+		N.epsilonNFA = true;
+		return N;
+	}
+	
+	public boolean isEpsilonNFA() {
+		return epsilonNFA;
+	}
+	
+	public static NFA NoTransitionNFA() {
+		return new NFA();
 	}
 	
 	public Node start() {
@@ -50,6 +61,9 @@ public class NFA {
 		N.start.addEpsilonTransition(B.start);
 		B.end.addEpsilonTransition(N.end);
 		
+		A.end().setFinal(false);
+		B.end().setFinal(false);
+		
 		return N;
 	}
 	
@@ -61,6 +75,9 @@ public class NFA {
 		A.end.addEpsilonTransition(B.start);
 		B.end.addEpsilonTransition(N.end);
 		
+		A.end().setFinal(false);
+		B.end().setFinal(false);
+		
 		return N;
 	}
 	
@@ -69,10 +86,26 @@ public class NFA {
 		NFA N = new NFA();
 		
 		N.start.addEpsilonTransition(A.start);
-		A.start.addEpsilonTransition(N.end);
+		A.end.addEpsilonTransition(A.start);
+		
+		A.end.addEpsilonTransition(N.end);
+		N.start.addEpsilonTransition(N.end);
+		
+		A.end().setFinal(false);
+		
+		return N;
+	}
+	
+	public NFA plus() {
+		NFA A = this;
+		NFA N = new NFA();
+		
+		N.start.addEpsilonTransition(A.start);
 		
 		A.end.addEpsilonTransition(A.start);
-		N.start.addEpsilonTransition(N.end);
+		A.end.addEpsilonTransition(N.end);
+		
+		A.end().setFinal(false);
 		
 		return N;
 	}
@@ -80,24 +113,26 @@ public class NFA {
 	public String toString() {
 		String out = "";
 		
-		Queue<Node> Q = new LinkedList<Node>();
+		Stack<Node> Q = new Stack<Node>();
 		Q.add(start);
 		while(!Q.isEmpty()) {
-			Node u = Q.poll();
+			Node u = Q.pop();
 			u.color = 1;
-			out += "Node " + u;
+			out += u + "\n";
 			for(Transition e : u.adjacencyList()) {
 				if(e.end.color == 0) {
 					Q.add(e.end);
 				}
-				out += "\n\t" + "--> " + e.end;
+				out += "\t" + e + "\n";
 			}
 		}
+		
+		out = out.substring(0, out.length()-1);
 		
 		// Uncolor
 		Q.add(start);
 		while(!Q.isEmpty()) {
-			Node u = Q.poll();
+			Node u = Q.pop();
 			u.color = 0;
 			for(Transition e : u.adjacencyList()) {
 				if(e.end.color == 1) {

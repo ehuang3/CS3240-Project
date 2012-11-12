@@ -35,6 +35,10 @@ public class Node {
 		return terminal;
 	}
 	
+	public void setFinal(boolean f) {
+		terminal = f;
+	}
+	
 	public List<Transition> adjacencyList() {
 		return adj;
 	}
@@ -48,6 +52,6 @@ public class Node {
 	}
 	
 	public String toString() {
-		return name;
+		return "Node " + name + (terminal ? " (final)" : "");
 	}
 }

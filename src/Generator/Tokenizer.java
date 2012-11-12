@@ -54,14 +54,17 @@ public class Tokenizer {
 //		ids.clear();  //<-- Couldn't hurt to save these
 	}
 	
-	public Token peek() {
+	public Token peek(int n) {
 		// Save state
 		int _pos = pos;
 		boolean _potentialEpsilon = potentialEpsilon;
 		boolean _regexMode = regexMode;
 		
 		// Peek ahead
-		Token nextToken = next();
+		Token nextToken = null;
+		while(n-- >= 0) {
+			nextToken = next();
+		}
 		
 		// Restore state
 		pos = _pos;
@@ -69,6 +72,10 @@ public class Tokenizer {
 		regexMode = _regexMode;
 		
 		return nextToken;
+	}
+	
+	public Token peek() {
+		return peek(1);
 	}
 	
 	public boolean hasNext() {
