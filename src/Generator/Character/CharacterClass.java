@@ -38,7 +38,7 @@ public class CharacterClass
 		}
 	}
 	
-	public void acceptBoundary(int start, int end)
+	public void acceptBoundary(char start, char end)
 	{
 		for(int a = (int)start; a <= (int)end; a++)
 		{
@@ -48,25 +48,40 @@ public class CharacterClass
 
 	public CharacterClass union(CharacterClass c) 
 	{
+		CharacterClass temp = new CharacterClass(name);
 		for(int a = 0; a < valid.length; a++)
 		{
-			if(c.valid[a])
+			if(c.valid[a] || valid[a])
 			{
-				valid[a] = true;
+				temp.valid[a] = true;
 			}
 		}
-		return this;
+		return temp;
+	}
+	
+	public CharacterClass intersect(CharacterClass c)
+	{
+		CharacterClass temp = new CharacterClass(name);
+		for(int a = 0; a < valid.length; a++)
+		{
+			if(c.valid[a] && valid[a])
+			{
+				temp.valid[a] = true;
+			}
+		}
+		return temp;
 	}
 	
 	public CharacterClass exclude(CharacterClass c)
 	{
+		CharacterClass temp = new CharacterClass(name);
 		for(int a = 0; a < valid.length; a++)
 		{
-			if(c.valid[a])
+			if(valid[a] && !c.valid[a])
 			{
-				valid[a] = false;
+				temp.valid[a] = true;
 			}
 		}
-		return this;
+		return temp;
 	}
 }
