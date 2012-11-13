@@ -21,7 +21,7 @@ public class NFAFactoryTest {
 		Factory = new NFAFactory();
 	}
 	
-	@Test
+	//@Test
 	public void testEpsilon() {
 		NFA epsNFA = NFA.EpsilonNFA();
 		
@@ -33,7 +33,7 @@ public class NFAFactoryTest {
 		assertEquals("Failed", NFASim.parse(epsNFA, " ").token);
 	}
 	
-	@Test
+	//@Test
 	public void testSample() {
 		NFA test = Factory.build("$TEST (1)(2)*(3)(4|5|6)+(|^-)");
 		
@@ -48,6 +48,23 @@ public class NFAFactoryTest {
 		String code = "[     ]";
 		assertEquals(code, NFASim.parse(test, code).token);
 		code = "[             ]";
+		assertEquals(code, NFASim.parse(test, code).token);
+	}
+	
+	@Test
+	public void testAddMultExpr() {
+		NFA test = Factory.build("$TEST (0|1|2|3|4|5|6|7|8|9)+(\\ |((\\+|\\*)(\\ )*(0|1|2|3|4|5|6|7|8|9)+)*)*");
+		String code = "12 + 56 + 78 * 9";
+		System.out.println(NFASim.parse(test, code));
+		assertEquals(code, NFASim.parse(test, code).token);
+	}
+	
+	@Test
+	public void testDoubleStar() {
+		NFA test = Factory.build("$TEST (a|()*)*");
+		System.out.println(test);
+		String code = "aaaaaa";
+		System.out.println(NFASim.parse(test, code));
 		assertEquals(code, NFASim.parse(test, code).token);
 	}
 }

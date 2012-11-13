@@ -68,6 +68,7 @@ public class NFASimulator {
 			//System.out.println(c);
 			if(u.isFinal() && c.pos == code.length()) {
 				r = new Result(c.token, numMoves);
+				break;
 			}
 		}
 		if(r == null) {
@@ -89,7 +90,7 @@ public class NFASimulator {
 		}
 		
 		public String toString() {
-			return token + " at " + pos;
+			return token + " at " + pos + " " + node;
 		}
 	}
 	
