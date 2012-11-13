@@ -111,7 +111,7 @@ public class NFAFactory {
 			T.match(op_code.epsilon);
 			nfa = NFA.EpsilonNFA();
 		default :
-			// Do nothing
+			// Return null to signal no more terminals to match
 		}
 		return nfa;
 	}
