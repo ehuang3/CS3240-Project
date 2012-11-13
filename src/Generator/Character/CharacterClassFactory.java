@@ -46,6 +46,7 @@ public class CharacterClassFactory
 			{
 				
 			}
+			
 			top = token.operand;  //sync the token operand for next iteration
 		}
 		
@@ -81,13 +82,60 @@ public class CharacterClassFactory
 	{
 		if(ptop == op_code.exclude)
 		{
-			rangeBoundary();
+			rangeBoundary();  //[abc] or [a-z] ????
 			advancePeek();  
 			
 			if(ptop == op_code.in)  //detect IN
 			{
-				//char class to exclude
-				//accept everything other than excluded from char class
+				token = tokenizer.next();
+				top = token.operand;
+				
+				if(top == op_code.id)  //next token is a char class
+				{
+					if(token.value.equals("$CHAR"))
+					{
+						for(int a = 65; a <= 122; a++)
+						{
+							if(!(a >= 91 && a <= 96))
+							{
+								if(!(a >= start && a <= end))
+								{
+									cc.accept((char)a);
+								}
+							}
+						}
+					}
+					else if(token.value.equals("$UPPER"))
+					{
+						for(int a = 65; a <= 90; a++)
+						{
+							if(!(a >= start && a <= end))
+							{
+								cc.accept((char)a);
+							}
+						}
+					}
+					else if(token.value.equals("$DIGIT"))
+					{
+						for(int a = 48; a <= 57; a++)
+						{
+							if(!(a >= start && a <= end))
+							{
+								cc.accept((char)a);
+							}
+						}
+					}
+					else if(token.value.equals("$NON-ZERO"))
+					{
+						for(int a = 49; a <= 57; a++)
+						{
+							if(!(a >= start && a <= end))
+							{
+								cc.accept((char)a);
+							}
+						}
+					}
+				}
 			}
 		}
 	}

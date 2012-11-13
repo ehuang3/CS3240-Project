@@ -4,9 +4,9 @@ import java.util.ArrayList;
 
 public class CharacterClass 
 {	
-	private boolean[] valid;
-	private ArrayList<Character> real;
-	private String name;
+	boolean[] valid;
+	ArrayList<Character> real;
+	String name;
 	
 	public CharacterClass(String name)
 	{
@@ -14,7 +14,7 @@ public class CharacterClass
 		real = new ArrayList<Character>();
 		this.name = name;
 	}
-	
+
 	public boolean isMatched(char c) 
 	{
 		return valid[(int)c];
@@ -51,20 +51,15 @@ public class CharacterClass
 		}
 	}
 	
-	public ArrayList<Character> getAllCharacter()
+	public CharacterClass union(CharacterClass c) 
 	{
-		if(real.size() == 0)
+		for(int a = 0; a < valid.length; a++)
 		{
-			getAllCharacterHelper();
+			if(c.valid[a])
+			{
+				valid[a] = true;
+			}
 		}
-		return real;
+		return this;
 	}
-	
-	/*
-	//to do
-	
-	public CharacterClass union(CharacterClass c) {
-		return new CharacterClass();
-	}
-	*/
 }
