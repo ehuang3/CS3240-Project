@@ -25,9 +25,11 @@ public class NFAFactoryTest {
 	public void testEpsilon() {
 		NFA epsNFA = NFA.EpsilonNFA();
 		
-		epsNFA = Factory.build("$NULL ()()()()()||||a");
+		epsNFA = Factory.build("$NULL ()()()()()*||||a");
 		
-		assertEquals("", NFASim.parse(epsNFA, "").token);
+		System.out.println(epsNFA);
+		
+		assertEquals("a", NFASim.parse(epsNFA, "a").token);
 		assertEquals("Failed", NFASim.parse(epsNFA, " ").token);
 	}
 

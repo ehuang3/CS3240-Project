@@ -78,6 +78,20 @@ public class Tokenizer {
 		return peek(1);
 	}
 	
+	public void match(op_code op) {
+		match(new Token(op,""));
+	}
+	
+	public void match(Token token) {
+		if(token.equals(peek())) {
+			next();
+		} else {
+			System.err.println("Failed to match token: Position " + pos + " in " + code + "\n" +
+								"\tExpected: " + token  + "\n" +
+								"\t  Actual: " + peek() + "\n" );
+		}
+	}
+	
 	public boolean hasNext() {
 		return peek().operand != op_code.eoi;
 	}
@@ -98,167 +112,167 @@ public class Tokenizer {
 		// Parse token
 		Token token;
 		switch (op) {
-			case "(" :
-				if(regexMode) {
-					potentialEpsilon = true;
-					token = new Token(op_code.left_paren, op);
-					pos++;
-				} else {
-					potentialEpsilon = false;
-					token = new Token(op_code.cls_char, op);
-					pos++;
-				}
-				break;
-			case ")" :
-				if(regexMode) {
-					if(potentialEpsilon) {
-						potentialEpsilon = false;
-						token = new Token(op_code.epsilon, "");
-					} else {
-						token = new Token(op_code.right_paren, op);
-						pos++;
-					}
-				} else {
-					potentialEpsilon = false;
-					token = new Token(op_code.cls_char, op);
-					pos++;
-				}
-				break;
-			case "|" :
-				if(regexMode) {
-					if(potentialEpsilon) {
-						potentialEpsilon = false;
-						token = new Token(op_code.epsilon, "");
-					} else {
-						potentialEpsilon = true;
-						token = new Token(op_code.or, op);
-						pos++;
-					}
-				} else {
-					potentialEpsilon = false;
-					token = new Token(op_code.cls_char, op);
-					pos++;
-				}
-				break;
-			case "*" :
-				if(regexMode) {
-					token = new Token(op_code.star, op);
-					pos++;
-				} else {
-					potentialEpsilon = false;
-					token = new Token(op_code.cls_char, op);
-					pos++;
-				}
-				break;
-			case "+" :
-				if(regexMode) {
-					token = new Token(op_code.plus, op);
-					pos++;
-				} else {
-					potentialEpsilon = false;
-					token = new Token(op_code.cls_char, op);
-					pos++;
-				}
-				break;
-			case "$" :
-				if(regexMode) {
-					potentialEpsilon = false;
-					String id = findId();
-					token = new Token(op_code.id, id);
-					pos += id.length();
-				} else {
-					potentialEpsilon = false;
-					token = new Token(op_code.cls_char, op);
-					pos++;
-				}
-				break;
-			case "[" :
-				if(regexMode) {
-					regexMode = false;
-					potentialEpsilon = true;
-					token = new Token(op_code.left_brac, op);
-					pos++;
-				} else {
-					potentialEpsilon = false;
-					token = new Token(op_code.cls_char, op);
-					pos++;
-				}
-				break;
-			case "]" :
-				if(!regexMode) {
-					if(potentialEpsilon) {
-						potentialEpsilon = false;
-						token = new Token(op_code.epsilon, "");
-					} else {
-						regexMode = true;
-						token = new Token(op_code.right_brac, op);
-						pos++;
-					}
-				} else {
-					potentialEpsilon = false;
-					token = new Token(op_code.re_char, op);
-					pos++;
-				}
-				break;
-			case "." :
-				if(regexMode) {
-					potentialEpsilon = false;
-					token = new Token(op_code.match_all, op);
-					pos++;
-				} else {
-					potentialEpsilon = false;
-					token = new Token(op_code.cls_char, op);
-					pos++;
-				}
-				break;
-			case "-" :
-				if(!regexMode) {
-					token = new Token(op_code.range, op);
-					pos++;
-				} else {
-					potentialEpsilon = false;
-					token = new Token(op_code.re_char, op);
-					pos++;
-				}
-				break;
-			case "^" :
-				if(!regexMode) {
-					potentialEpsilon = false;
-					token = new Token(op_code.exclude, op);
-					pos++;
-				} else {
-					potentialEpsilon = false;
-					token = new Token(op_code.re_char, op);
-					pos++;
-				}
-				break;
-			case "IN" :
-				if(regexMode) {
-					token = new Token(op_code.in, op);
-					pos += 2;
-				} else {
-					potentialEpsilon = false;
-					token = new Token(op_code.cls_char, "I");
-					pos++;
-				}
-				break;
-			case "\\" :
-				if(regexMode) {
-					token = new Token(op_code.re_char, code.substring(pos+1,pos+2));
-				} else {
-					token = new Token(op_code.cls_char, code.substring(pos+1,pos+2));
-				}
-				potentialEpsilon = false;
-				pos += 2;
-				break;
-			default :
-				if(regexMode) {
-					token = new Token(op_code.re_char, op);
-				} else {
-					token = new Token(op_code.cls_char, op);
-				}
-				potentialEpsilon = false;
+		case "(" :
+			if(regexMode) {
+				potentialEpsilon = true;
+				token = new Token(op_code.left_paren, op);
 				pos++;
+			} else {
+				potentialEpsilon = false;
+				token = new Token(op_code.cls_char, op);
+				pos++;
+			}
+			break;
+		case ")" :
+			if(regexMode) {
+				if(potentialEpsilon) {
+					potentialEpsilon = false;
+					token = new Token(op_code.epsilon, "");
+				} else {
+					token = new Token(op_code.right_paren, op);
+					pos++;
+				}
+			} else {
+				potentialEpsilon = false;
+				token = new Token(op_code.cls_char, op);
+				pos++;
+			}
+			break;
+		case "|" :
+			if(regexMode) {
+				if(potentialEpsilon) {
+					potentialEpsilon = false;
+					token = new Token(op_code.epsilon, "");
+				} else {
+					potentialEpsilon = true;
+					token = new Token(op_code.or, op);
+					pos++;
+				}
+			} else {
+				potentialEpsilon = false;
+				token = new Token(op_code.cls_char, op);
+				pos++;
+			}
+			break;
+		case "*" :
+			if(regexMode) {
+				token = new Token(op_code.star, op);
+				pos++;
+			} else {
+				potentialEpsilon = false;
+				token = new Token(op_code.cls_char, op);
+				pos++;
+			}
+			break;
+		case "+" :
+			if(regexMode) {
+				token = new Token(op_code.plus, op);
+				pos++;
+			} else {
+				potentialEpsilon = false;
+				token = new Token(op_code.cls_char, op);
+				pos++;
+			}
+			break;
+		case "$" :
+			if(regexMode) {
+				potentialEpsilon = false;
+				String id = findId();
+				token = new Token(op_code.id, id);
+				pos += id.length();
+			} else {
+				potentialEpsilon = false;
+				token = new Token(op_code.cls_char, op);
+				pos++;
+			}
+			break;
+		case "[" :
+			if(regexMode) {
+				regexMode = false;
+				potentialEpsilon = true;
+				token = new Token(op_code.left_brac, op);
+				pos++;
+			} else {
+				potentialEpsilon = false;
+				token = new Token(op_code.cls_char, op);
+				pos++;
+			}
+			break;
+		case "]" :
+			if(!regexMode) {
+				if(potentialEpsilon) {
+					potentialEpsilon = false;
+					token = new Token(op_code.epsilon, "");
+				} else {
+					regexMode = true;
+					token = new Token(op_code.right_brac, op);
+					pos++;
+				}
+			} else {
+				potentialEpsilon = false;
+				token = new Token(op_code.re_char, op);
+				pos++;
+			}
+			break;
+		case "." :
+			if(regexMode) {
+				potentialEpsilon = false;
+				token = new Token(op_code.match_all, op);
+				pos++;
+			} else {
+				potentialEpsilon = false;
+				token = new Token(op_code.cls_char, op);
+				pos++;
+			}
+			break;
+		case "-" :
+			if(!regexMode) {
+				token = new Token(op_code.range, op);
+				pos++;
+			} else {
+				potentialEpsilon = false;
+				token = new Token(op_code.re_char, op);
+				pos++;
+			}
+			break;
+		case "^" :
+			if(!regexMode) {
+				potentialEpsilon = false;
+				token = new Token(op_code.exclude, op);
+				pos++;
+			} else {
+				potentialEpsilon = false;
+				token = new Token(op_code.re_char, op);
+				pos++;
+			}
+			break;
+		case "IN" :
+			if(regexMode) {
+				token = new Token(op_code.in, op);
+				pos += 2;
+			} else {
+				potentialEpsilon = false;
+				token = new Token(op_code.cls_char, "I");
+				pos++;
+			}
+			break;
+		case "\\" :
+			if(regexMode) {
+				token = new Token(op_code.re_char, code.substring(pos+1,pos+2));
+			} else {
+				token = new Token(op_code.cls_char, code.substring(pos+1,pos+2));
+			}
+			potentialEpsilon = false;
+			pos += 2;
+			break;
+		default :
+			if(regexMode) {
+				token = new Token(op_code.re_char, op);
+			} else {
+				token = new Token(op_code.cls_char, op);
+			}
+			potentialEpsilon = false;
+			pos++;
 		}
 		// Consume trailing whitespace
 		skip();

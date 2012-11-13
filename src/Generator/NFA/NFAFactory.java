@@ -36,159 +36,88 @@ public class NFAFactory {
 		indent = indent.substring(tab.length());
 	}
 	
-
 	public NFA build(String in) {
-		System.out.println(indent + "BUILD: " + in);
-		addTab();
-		
 		T.tokenize(in);
-		Token nameTok = T.next();
-		
-		NFA N = reg_expr();
-		N.name = nameTok.value;		
-		
-		removeTab();
-		System.out.println(indent + "BUILD: " + in);
-		
-		return N;
+		T.match(op_code.id);
+		return regex();
 	}
 	
-	// rexp
-	public NFA reg_expr() {
-		System.out.println(indent + "REG_EXPR:");
-		addTab();		
-		
-		NFA N = and_expr().or(or_expr());
-		
-		removeTab();
-		System.out.println(indent + "REG_EXPR:");
-		
-		return N;
+	private NFA regex() {
+		NFA nfa = unary_list();
+		while(op_code.or == T.peek().operand) {
+			T.match(op_code.or);
+			nfa.or(unary_list());
+		}
+		return nfa;
 	}
 	
-	// rexp'
-	private NFA or_expr() {		
-		Token token = T.peek();
-		
-		System.out.println(indent + "OR_EXPR: " + token);
-		addTab();
-		
-		NFA N = null;
-		switch (token.operand) {
-		case or :
-			T.next();
-			N = reg_expr();
+	private NFA unary_list() {
+		NFA nfa = unary_expr();
+		NFA unary = unary_expr();
+		while( op_code.or  != T.peek().operand &&
+			   op_code.eoi != T.peek().operand &&
+			         unary != null				  ) {
+			nfa.and(unary);
+			unary = unary_expr();
+		}
+		return nfa;
+	}
+	
+	private NFA unary_expr() {
+		NFA nfa = term_expr();
+		switch (T.peek().operand) {
+		case star :
+			T.match(op_code.star);
+			nfa.star();
+			break;
+		case plus :
+			T.match(op_code.plus);
+			nfa.plus();
+			break;
+		default:
+			break;
+		}
+		return nfa;
+	}
+	
+	private NFA term_expr() {
+		NFA nfa = null;
+		switch (T.peek().operand) {
+		case re_char :
+			CharacterClass cls = new CharacterClass("");
+			cls.accept(T.peek().value.charAt(0));
+			nfa = new NFA(cls);
+			T.match(op_code.re_char);
+			break;
+		case left_paren :
+			T.match(op_code.left_paren);
+			nfa = regex();
+			T.match(op_code.right_paren);
 			break;
 		default :
-			N = NFA.NoTransitionNFA();
+			nfa = char_class_expr();
 		}
-		
-		removeTab();
-		System.out.println(indent + "OR_EXPR: " + token);
-		return N;
+		return nfa;
 	}
 	
-	// rexp1
-	private NFA and_expr() {
-		System.out.println(indent + "AND_EXPR:");
-		addTab();
-		
-		NFA N =  term_expr().and(and_tail_expr());
-		
-		removeTab();
-		System.out.println(indent + "AND_EXPR:");
-		
-		return N;
-	}
-	
-	// rexp1'
-	private NFA and_tail_expr() {
-		System.out.println(indent + "AND_TAIL_EXPR:");
-		addTab();
-		
-		NFA N = term_expr();
-		if(N.isEpsilonNFA()) {
-			// Do nothing
-		} else {
-			N =  N.and(and_tail_expr());
-		}
-		
-		removeTab();
-		System.out.println(indent + "AND_TAIL_EXPR:");
-		
-		return N;
-	}
-	
-	// rexp2, rexp2-tail
-	private NFA term_expr() {
-		Token token = T.peek();
-		
-		System.out.println(indent + "TERM_EXPR: " + token);
-		addTab();
-		
-		NFA N = null;
-		switch (token.operand) {
-			case left_paren :
-				T.next();
-				N = reg_expr();
-				T.next();
-				break;
-			case re_char :
-				T.next();
-				CharacterClass match = new CharacterClass("");
-				match.accept(token.value);
-				N = new NFA(match);
-				break;
-			default:
-				N = char_class_expr();
-		}
-		
-		token = T.peek();
-		switch (token.operand) {
-			case star :
-				T.next();
-				N = N.star();
-				break;
-			case plus :
-				T.next();
-				N = N.plus();
-				break;
-			default:
-				// Do nothing
-		}
-		
-		removeTab();
-		System.out.println(indent + "TERM_EXPR: " + token);
-		return N;
-	}
-	
-	// rexp3
 	private NFA char_class_expr() {
-		Token token = T.peek();
-		
-		System.out.println(indent + "CHAR_CLASS_EXPR: " + token);
-		addTab();
-		
-		NFA N = null;
-		switch (token.operand) {
-			case match_all :
-				 N = new NFA( CharacterClass.MatchAll() );
-				 T.next();
+		NFA nfa = null;
+		switch (T.peek().operand) {
+		case left_brac :
 			break;
-			case left_brac :
-				N = new NFA( ccFactory.build() );
-			break;
-			case id : 
-				N = new NFA( ccMap.get(token.value) );
-				T.next();
-			break;
-			default :
-				N = NFA.EpsilonNFA();
+		case match_all :
+			nfa = new NFA( new CharacterClass(".") );
+			T.match(op_code.match_all);
+		case id :
+			nfa = new NFA( ccMap.get(T.peek().value) );
+			T.match(op_code.id);
+		case epsilon :
+			T.match(op_code.epsilon);
+			nfa = NFA.EpsilonNFA();
+		default :
+			// Do nothing
 		}
-		
-		removeTab();
-		System.out.println(indent + "CHAR_CLASS_EXPR: " + token);
-		return N;
+		return nfa;
 	}
 	
 	public CharacterClass buildCharClass() {

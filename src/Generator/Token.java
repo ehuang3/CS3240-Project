@@ -31,4 +31,8 @@ public class Token {
 	public String toString() {
 		return operand + ": " + value;
 	}
+	
+	public boolean equals(Token other) {
+		return operand == other.operand;
+	}
 }
