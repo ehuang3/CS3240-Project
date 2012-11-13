@@ -5,6 +5,8 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.Scanner;
 
+import Generator.NFA.NFAFactory;
+
 public class main {
 	
 	public static void main(String[] args) {
@@ -31,6 +33,8 @@ public class main {
 			Scanner in = new Scanner(new BufferedReader(new FileReader(spec_fname)));
 			
 			//FIXME: Initialize Factory classes and Tokenizer
+			Tokenizer T = new Tokenizer("");
+			NFAFactory RegexGenerator = new NFAFactory();
 			
 			// State switching variables
 			int section = -1;
@@ -51,6 +55,8 @@ public class main {
 				}
 			}
 			in.close();
+			
+			//FIXME: NFA to DFA
 			
 			//FIXME: Tokenize input code
 			

@@ -100,11 +100,14 @@ public class NFAFactory {
 		NFA nfa = null;
 		switch (T.peek().operand) {
 		case left_brac :
+			//FIXME: Call clsFactory subroutine
 			break;
 		case match_all :
+			//FIXME: Replace with match-all cls
 			nfa = new NFA( new CharacterClass(".") );
 			T.match(op_code.match_all);
 		case id :
+			//FIXME: Implement ccMap
 			nfa = new NFA( ccMap.get(T.peek().value) );
 			T.match(op_code.id);
 		case epsilon :

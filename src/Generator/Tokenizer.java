@@ -51,7 +51,6 @@ public class Tokenizer {
 		pos = 0;
 		potentialEpsilon = true;
 		regexMode = true;
-//		ids.clear();  //<-- Couldn't hurt to save these
 	}
 	
 	public Token peek(int n) {
@@ -315,6 +314,12 @@ public class Tokenizer {
 			// Add to list of ids
 			ids.add(id);
 		}
+		
+		//FIXME: Handle ids with overlapping names.
+		// 		 $PAPER and $PAPERWATER
+		//FIXME: Ambiguous match
+		// 		 $ID, $ID1, and $ID2
+		// 		 regex = $ID1234$ID234
 		
 		return id;
 	}
