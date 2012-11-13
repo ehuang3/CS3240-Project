@@ -5,7 +5,6 @@ import java.util.ArrayList;
 public class CharacterClass 
 {	
 	boolean[] valid;
-	ArrayList<Character> real;
 	String name;
 	
 	public CharacterClass()
@@ -16,7 +15,6 @@ public class CharacterClass
 	public CharacterClass(String name)
 	{
 		valid = new boolean[256];
-		real = new ArrayList<Character>();
 		this.name = name;
 	}
 
