@@ -35,7 +35,7 @@ public class Node {
 		return terminal;
 	}
 	
-	public void setFinal(boolean f) {
+	public void terminal(boolean f) {
 		terminal = f;
 	}
 	

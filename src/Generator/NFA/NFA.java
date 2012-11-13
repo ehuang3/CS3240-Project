@@ -5,8 +5,9 @@ import java.util.Stack;
 import Generator.Character.CharacterClass;
 
 /**
- * NFA implementation. The internals of the NFA are not copy-safe!
- * So do not concatenate NFAs with unrelated NFAs.
+ * Class representing a Nondeterministic Finite Automaton (NFA). 
+ * 
+ * The internals of different NFA may not be independent!
  * 
  * @author eric
  *
@@ -17,97 +18,187 @@ public class NFA {
 	Node end;
 	private boolean epsilonNFA;
 	
+	/**
+	 * Default NFA constructor returns a no-match NFA.
+	 */
 	private NFA() {
 		start = new Node();
 		end = new Node();
-		end.setFinal(true);
+		
+		end.terminal(true);
+		
+		epsilonNFA = false;
 	}
 	
+	/**
+	 * Primitive NFA matching a single character.
+	 * 
+	 * @param match
+	 */
 	public NFA(CharacterClass match) {
 		this();
 		start.addTransition(end, match);
 	}
 	
+	/**
+	 * Constructs a epsilon-matching NFA.
+	 * 
+	 * @return NFA
+	 */
 	public static NFA EpsilonNFA() {
 		NFA N = new NFA();
-		N.start.addEpsilonTransition(N.end);
 		N.epsilonNFA = true;
+		N.start.addEpsilonTransition(N.end);
 		return N;
 	}
 	
-	public boolean isEpsilonNFA() {
-		return epsilonNFA;
-	}
-	
+	/**
+	 * Constructs a no-match NFA.
+	 * 
+	 * @return
+	 */
 	public static NFA NoTransitionNFA() {
 		return new NFA();
 	}
 	
+	/**
+	 * True if NFA matches epsilon.
+	 * 
+	 * @return
+	 */
+	public boolean isEpsilonNFA() {
+		return epsilonNFA;
+	}
+	
+	/**
+	 * 
+	 * @return start node of NFA
+	 */
 	public Node start() {
 		return start;
 	}
 	
+	/**
+	 * 
+	 * @return end node of NFA
+	 */
 	public Node end() {
 		return end;
 	}
 	
+	/**
+	 * Performs the union of NFA B with itself.
+	 * 
+	 * @param B
+	 * @return self
+	 */
 	public NFA or(NFA B) {
-		NFA A = this;
-		NFA N = new NFA();
+		Node S = new Node();
+		Node E = new Node();
 		
-		N.start.addEpsilonTransition(A.start);
-		A.end.addEpsilonTransition(N.end);
+		S.addEpsilonTransition(start);
+		end.addEpsilonTransition(E);
 		
-		N.start.addEpsilonTransition(B.start);
-		B.end.addEpsilonTransition(N.end);
+		S.addEpsilonTransition(B.start);
+		B.end.addEpsilonTransition(E);
 		
-		A.end().setFinal(false);
-		B.end().setFinal(false);
+		end.terminal(false);
+		B.end.terminal(false);
 		
-		return N;
+		E.terminal(true);
+		
+		start = S;
+		end = E;
+
+		if(!B.isEpsilonNFA()) {
+			epsilonNFA = false;
+		}
+		return this;
 	}
 	
+	/**
+	 * Concatenates itself with B.
+	 * 
+	 * @param B
+	 * @return
+	 */
 	public NFA and(NFA B) {
-		NFA A = this;
-		NFA N = new NFA();
+		Node S = new Node();
+		Node E = new Node();
 		
-		N.start.addEpsilonTransition(A.start);
-		A.end.addEpsilonTransition(B.start);
-		B.end.addEpsilonTransition(N.end);
+		S.addEpsilonTransition(start);
+		end.addEpsilonTransition(B.end);
+		B.end.addEpsilonTransition(E);
 		
-		A.end().setFinal(false);
-		B.end().setFinal(false);
+		end.terminal(false);
+		B.end.terminal(false);
 		
-		return N;
+		E.terminal(true);
+		
+		start = S;
+		end = E;
+
+		if(!B.isEpsilonNFA()) {
+			epsilonNFA = false;
+		}
+		return this;
 	}
 	
+	/**
+	 * Kleene star of itself.
+	 * 
+	 * @return
+	 */
 	public NFA star() {
-		NFA A = this;
-		NFA N = new NFA();
-		
-		N.start.addEpsilonTransition(A.start);
-		A.end.addEpsilonTransition(A.start);
-		
-		A.end.addEpsilonTransition(N.end);
-		N.start.addEpsilonTransition(N.end);
-		
-		A.end().setFinal(false);
-		
-		return N;
+		if(isEpsilonNFA()) {
+			return this;
+		} else {
+			Node S = new Node();
+			Node E = new Node();
+			
+			S.addEpsilonTransition(start);
+			end.addEpsilonTransition(start);
+			
+			end.addEpsilonTransition(E);
+			S.addEpsilonTransition(E);
+			
+			end.terminal(false);
+			
+			E.terminal(true);
+			
+			start = S;
+			end = E;
+
+			return this;
+		}
 	}
 	
+	/**
+	 * Concatenates itself with its Kleene star.
+	 * 
+	 * @return
+	 */
 	public NFA plus() {
-		NFA A = this;
-		NFA N = new NFA();
-		
-		N.start.addEpsilonTransition(A.start);
-		
-		A.end.addEpsilonTransition(A.start);
-		A.end.addEpsilonTransition(N.end);
-		
-		A.end().setFinal(false);
-		
-		return N;
+		if(isEpsilonNFA()) {
+			return this;
+		} else {
+			Node S = new Node();
+			Node E = new Node();
+			
+			S.addEpsilonTransition(start);
+			end.addEpsilonTransition(start);
+			
+			end.addEpsilonTransition(E);
+			
+			end.terminal(false);
+			
+			E.terminal(true);
+			
+			start = S;
+			end = E;
+
+			return this;
+		}
 	}
 	
 	public String toString() {
