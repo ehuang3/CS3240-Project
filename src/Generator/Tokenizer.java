@@ -84,7 +84,8 @@ public class Tokenizer {
 	
 	public void match(Token token) {
 		if(token.equals(peek())) {
-			next();
+			Token m = next();
+			System.out.println("Matched token: " + m);
 		} else {
 			System.err.println("Failed to match token: Position " + pos + " in " + code + "\n" +
 								"\tExpected: " + token  + "\n" +

@@ -127,7 +127,7 @@ public class NFA {
 		Node E = new Node();
 		
 		S.addEpsilonTransition(start);
-		end.addEpsilonTransition(B.end);
+		end.addEpsilonTransition(B.start);
 		B.end.addEpsilonTransition(E);
 		
 		end.terminal(false);

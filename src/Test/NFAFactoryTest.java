@@ -27,15 +27,27 @@ public class NFAFactoryTest {
 		
 		epsNFA = Factory.build("$NULL ()()()()()*||||a");
 		
-		System.out.println(epsNFA);
+		//System.out.println(epsNFA);
 		
 		assertEquals("a", NFASim.parse(epsNFA, "a").token);
 		assertEquals("Failed", NFASim.parse(epsNFA, " ").token);
 	}
-
+	
 	@Test
-	public void testReg_expr() {
-		fail("Not yet implemented");
+	public void testSample() {
+		NFA test = Factory.build("$TEST (1)(2)*(3)(4|5|6)+(|^-)");
+		
+		//System.out.println(test);
+		
+		assertEquals("135", NFASim.parse(test, "135").token);
+		assertEquals("1223654^-", NFASim.parse(test, "1223654^-").token);
+		assertEquals("1223654", NFASim.parse(test, "1223654").token);
+		assertEquals("13555^-", NFASim.parse(test, "13555^-").token);
+		
+		test = Factory.build("$TEST \\[(\\ )*\\]");
+		String code = "[     ]";
+		assertEquals(code, NFASim.parse(test, code).token);
+		code = "[             ]";
+		assertEquals(code, NFASim.parse(test, code).token);
 	}
-
 }

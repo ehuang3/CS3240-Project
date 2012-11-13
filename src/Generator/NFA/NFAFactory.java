@@ -13,9 +13,6 @@ public class NFAFactory {
 	Map<String, CharacterClass> ccMap;
 	Tokenizer T;
 	
-	String indent = "";
-	String tab = "| ";
-	
 	public NFAFactory() {
 		T = new Tokenizer("");
 	}
@@ -28,21 +25,21 @@ public class NFAFactory {
 		T = t;
 	}
 	
-	private void addTab() {
-		indent += tab;
-	}
-	
-	private void removeTab() {
-		indent = indent.substring(tab.length());
-	}
-	
 	public NFA build(String in) {
 		T.tokenize(in);
-		T.match(op_code.id);
-		return regex();
+		NFA nfa = NFA.EpsilonNFA();
+		if(op_code.id == T.peek().operand) {
+			nfa.name = T.peek().value;
+			T.match(op_code.id);
+		}
+		return nfa.and(regex());
 	}
 	
-	private NFA regex() {
+	public void input(String in) {
+		T.tokenize(in);
+	}
+	
+	public NFA regex() {
 		NFA nfa = unary_list();
 		while(op_code.or == T.peek().operand) {
 			T.match(op_code.or);
@@ -55,7 +52,6 @@ public class NFAFactory {
 		NFA nfa = unary_expr();
 		NFA unary = unary_expr();
 		while( op_code.or  != T.peek().operand &&
-			   op_code.eoi != T.peek().operand &&
 			         unary != null				  ) {
 			nfa.and(unary);
 			unary = unary_expr();
