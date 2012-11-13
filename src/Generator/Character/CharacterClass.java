@@ -8,6 +8,11 @@ public class CharacterClass
 	ArrayList<Character> real;
 	String name;
 	
+	public CharacterClass()
+	{
+		this(null);
+	}
+	
 	public CharacterClass(String name)
 	{
 		valid = new boolean[256];
@@ -58,6 +63,18 @@ public class CharacterClass
 			if(c.valid[a])
 			{
 				valid[a] = true;
+			}
+		}
+		return this;
+	}
+	
+	public CharacterClass exclude(CharacterClass c)
+	{
+		for(int a = 0; a < valid.length; a++)
+		{
+			if(c.valid[a])
+			{
+				valid[a] = false;
 			}
 		}
 		return this;
