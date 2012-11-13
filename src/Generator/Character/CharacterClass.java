@@ -45,17 +45,7 @@ public class CharacterClass
 			valid[(char)a] = true;
 		}
 	}
-	public void getAllCharacterHelper()
-	{
-		for(int a = 0; a < 129; a++)
-		{
-			if(valid[a])
-			{
-				real.add((char)a);
-			}
-		}
-	}
-	
+
 	public CharacterClass union(CharacterClass c) 
 	{
 		for(int a = 0; a < valid.length; a++)

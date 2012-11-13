@@ -20,7 +20,7 @@ public class CharacterClassFactory
 		map = new HashMap<String, CharacterClass>();
 	}
 	
-	public CharacterClass build(String regex)  //char name
+	public CharacterClass build(String regex)  
 	{
 		token = tokenizer.next();  //consume 1st token (may be a name or [) 
 		CharacterClass temp = new CharacterClass();
@@ -33,56 +33,54 @@ public class CharacterClassFactory
 			token = tokenizer.next();  //consume [
 			if(token.operand == op_code.left_brac) 
 			{
-				temp = basic();
+				temp = basic();  //get first [^...] or [...] char class object  
 			}
 		}
-		else  //[ is 1st token
+		else  //[ is 1st token, char class without a name (not added to map)
 		{
-			temp = charClass();
+			//temp = charClass();  
+			temp = basic();  //get first [^...] or [...] char class object 
+		}
+		
+		//temp is a char class of [^...] or [...], need to check for IN 
+		//current token could be IN if not finished
+		if(token.operand == op_code.in)  //IN
+		{
+			CharacterClass temp2;
+			token = tokenizer.next();  //consume IN
+			temp2 = charList();  //original class to exclude from
+			temp2.exclude(temp);  //exclude everything of temp inside temp2
+			temp = temp2; 
 		}
 		return temp;
 	}
 	
-	public CharacterClass charClass()  //no char name
+	/*
+	public CharacterClass charClass()  
 	{
 		return basic();  //return [^...] or [...]
 	}
+	*/
 	
 	public CharacterClass basic()  //build [...], already consumed [
 	{
-		CharacterClass temp = null;
 		peekToken = tokenizer.peek();  //check if next token is ^
 		
 		if(peekToken.operand == op_code.exclude)  //[^ exclude
 		{
 			token = tokenizer.next();  //consume ^
-			CharacterClass e = charList();
-			
-			if(token.operand == op_code.in)  //IN
-			{
-				temp = charList();  //original class to exclude from
-				temp.exclude(e);  //exclude everything of e inside o
-			}
 		}
-		else  //not exclude 
-		{
-			temp = charList();
-		}
-		return temp;
+		return charList();
 	}
 	
-	public CharacterClass charList()
+	public CharacterClass charList()  //start by consuming 1st cls_char token
 	{
 		CharacterClass temp = new CharacterClass();
 		peekToken = tokenizer.peek();  //check if next token is cls_char
 		
 		while(peekToken.operand != op_code.right_brac)  //keep matching until ]
-		{
-			if(token.operand == op_code.cls_char)
-			{
-				token = tokenizer.next();  //consume current cls_char
-				temp.accept(token.value.charAt(0));  //add current cls_char to char class
-			}
+		{	
+			//check if next token is range to determine if current token is cls_char or start of range
 			if(peekToken.operand == op_code.range)
 			{ 
 				start = token.value.charAt(0);  //set current token as start bound
@@ -92,6 +90,12 @@ public class CharacterClassFactory
 				
 				temp.acceptBoundary(start, end);  //add range to char class
 			}	
+			
+			if(token.operand == op_code.cls_char)
+			{
+				token = tokenizer.next();  //consume current cls_char
+				temp.accept(token.value.charAt(0));  //add current cls_char to char class
+			}
 		}
 		
 		token = tokenizer.next();  //consume ]
