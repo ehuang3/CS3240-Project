@@ -1,7 +1,5 @@
 package Generator.Character;
 
-import java.util.ArrayList;
-
 public class CharacterClass 
 {	
 	boolean[] valid;
@@ -81,5 +79,17 @@ public class CharacterClass
 			}
 		}
 		return temp;
+	}
+	
+	public void print()
+	{
+		System.out.println("\n\nprinting charater class\n");
+		for(int a = 0; a < valid.length; a++)
+		{
+			if(valid[a])
+			{
+				System.out.print((char)a + "  ");
+			}
+		}
 	}
 }
