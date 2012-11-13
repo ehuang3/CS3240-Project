@@ -10,7 +10,7 @@ public class CharacterClass
 	
 	public CharacterClass()
 	{
-		this(null);
+		this("");
 	}
 	
 	public CharacterClass(String name)
