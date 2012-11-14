@@ -8,7 +8,7 @@ import Generator.Tokenizer;
 
 public class CharacterClassFactory 
 {
-	Tokenizer tokenizer;
+	public Tokenizer tokenizer;
 	HashMap<String, CharacterClass> map;
 	Token token, peekToken;
 	op_code top, ptop;
@@ -20,6 +20,10 @@ public class CharacterClassFactory
 		map = new HashMap<String, CharacterClass>();
 	}
 	
+	public CharacterClass getCharClass(String name) {
+		return map.get(name);
+	}
+	
 	public CharacterClass build(String regex)  
 	{
 		tokenizer.tokenize(regex);
@@ -27,16 +31,18 @@ public class CharacterClassFactory
 		System.out.println("\tinside build()");
 		peekToken = tokenizer.peek();  //consume 1st token (may be a name or [) 
 		CharacterClass temp = new CharacterClass();
+		String s = "";
 		
 		if(peekToken.operand == op_code.id)  //name of char class (1st token)
 		{
 			consume(1);  //consume name of class 1
-			temp.name = token.value;  //set char class name
-			map.put(temp.name, temp);  //add char class with a name to map
-			System.out.println("\t\t\t\t\t\t\t\t\tname: " + token.value + "\tsize: " + map.size());
+			s = token.value;  //set char class name
+			//System.out.println("\t\t\t\t\t\t\t\t\tname: " + token.value + "\tsize: " + map.size());
 		}
 		
 		temp = charClass();  //get first [^...] or [...] char class object 
+		temp.name = s;
+		map.put(s, temp);
 		return temp;
 	}
 	
