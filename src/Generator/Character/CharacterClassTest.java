@@ -45,7 +45,6 @@ public class CharacterClassTest
 			ccf.build(s).print();
 		}
 
-		
 		System.out.println("\n\n=====================================================================================================");
 	}
 }
