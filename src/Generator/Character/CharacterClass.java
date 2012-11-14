@@ -75,6 +75,7 @@ public class CharacterClass
 		{
 			if(valid[a] && !c.valid[a])
 			{
+				//System.out.println("setting: " + (char)a);
 				temp.valid[a] = true;
 			}
 		}
@@ -83,7 +84,7 @@ public class CharacterClass
 	
 	public void print()
 	{
-		System.out.println("\n\nprinting charater class\n");
+		System.out.println("\n\nprinting character class\n");
 		for(int a = 0; a < valid.length; a++)
 		{
 			if(valid[a])
