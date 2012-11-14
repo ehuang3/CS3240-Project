@@ -5,8 +5,8 @@ import java.util.List;
 
 import Generator.Character.CharacterClass;
 
-public class Node {
-	List<Transition> adj;
+public class DFANode {
+	List<DFATransition> adj;
 	boolean terminal;
 	String token;
 	
@@ -14,8 +14,8 @@ public class Node {
 	int color;
 	String name;
 	
-	public Node() {
-		adj = new LinkedList<Transition>();
+	public DFANode() {
+		adj = new LinkedList<DFATransition>();
 		terminal = false;
 		token = "";
 		
@@ -35,12 +35,12 @@ public class Node {
 		token = t;
 	}
 	
-	public List<Transition> adjacencyList() {
+	public List<DFATransition> adjacencyList() {
 		return adj;
 	}
 	
-	public void addTransition(Node end, CharacterClass match) {
-		adj.add(new Transition(this, end, match));
+	public void addTransition(DFANode end, CharacterClass match) {
+		adj.add(new DFATransition(this, end, match));
 	}
 	
 	public String toString() {

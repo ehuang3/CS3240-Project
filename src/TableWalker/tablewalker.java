@@ -3,9 +3,9 @@ package TableWalker;
 import java.util.ArrayList;
 import java.util.List;
 
-import Generator.DFA.Node;
+import Generator.DFA.DFANode;
 import Generator.DFA.DFA;
-import Generator.DFA.Transition;
+import Generator.DFA.DFATransition;
 
 /**
  * This class takes in a String input and compares each character in the input to the DFA transition table to walk in the DFA.
@@ -15,11 +15,12 @@ import Generator.DFA.Transition;
 public class tablewalker {
 	
 	DFA dfa;
-	Transition transition;
+	DFATransition transition;
 	String input;
 	int i, j;
-	List<Transition> list;
+	List<DFATransition> list;
 	ArrayList<String> tokenlist;
+	
 
 	public tablewalker(DFA dfa, String input){
 		this.dfa = dfa;
@@ -36,13 +37,13 @@ public class tablewalker {
 		
 		char current;
 		String token = "";
-		Node now = dfa.start();
-		List<Transition> list;
+		DFANode now = dfa.start();
+		List<DFATransition> list;
 		
 		for(i=0; i < input.length(); i++){
 			j = 0;
 			list = now.adjacencyList();
-			Transition transition = list.get(j);
+			DFATransition transition = list.get(j);
 			int size = list.size();
 			boolean found = false;	
 			boolean valid = true;

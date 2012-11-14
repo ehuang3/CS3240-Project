@@ -6,12 +6,10 @@ import static org.junit.Assert.fail;
 import java.util.ArrayList;
 import java.util.List;
 
-import Generator.DFA.Node;
+import Generator.DFA.DFANode;
 import Generator.DFA.DFA;
-import Generator.DFA.Transition;
+import Generator.DFA.DFATransition;
 
 public class TableWalkerTest {
 
-	
-	tablewalker walker = new tablewalker()
 }

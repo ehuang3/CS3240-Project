@@ -2,41 +2,41 @@ package Generator.DFA;
 
 import java.util.Stack;
 
-import Generator.DFA.Node;
-import Generator.DFA.Transition;
+import Generator.DFA.DFANode;
+import Generator.DFA.DFATransition;
 
 public class DFA {
 	String name;
-	Node start;
-	Node end;
+	public DFANode start;
+	public DFANode end;
 	
 	public DFA() {
-		start = new Node();
-		end = new Node();
+		start = new DFANode();
+		end = new DFANode();
 	}
 	
 	public void name(String n) {
 		name = n;
 	}
 
-	public Node start() {
+	public DFANode start() {
 		return start;
 	}
 
-	public Node end() {
+	public DFANode end() {
 		return end;
 	}
 
 	public String toString() {
 		String out = "";
 		
-		Stack<Node> Q = new Stack<Node>();
+		Stack<DFANode> Q = new Stack<DFANode>();
 		Q.add(start);
 		while(!Q.isEmpty()) {
-			Node u = Q.pop();
+			DFANode u = Q.pop();
 			u.color = 1;
 			out += u + "\n";
-			for(Transition e : u.adjacencyList()) {
+			for(DFATransition e : u.adjacencyList()) {
 				if(e.end.color == 0) {
 					Q.add(e.end);
 				}
@@ -49,9 +49,9 @@ public class DFA {
 		// Uncolor
 		Q.add(start);
 		while(!Q.isEmpty()) {
-			Node u = Q.pop();
+			DFANode u = Q.pop();
 			u.color = 0;
-			for(Transition e : u.adjacencyList()) {
+			for(DFATransition e : u.adjacencyList()) {
 				if(e.end.color == 1) {
 					Q.add(e.end);
 				}

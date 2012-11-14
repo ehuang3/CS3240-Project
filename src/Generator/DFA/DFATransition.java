@@ -1,14 +1,14 @@
 package Generator.DFA;
 
 import Generator.Character.CharacterClass;
-import Generator.DFA.Node;
+import Generator.DFA.DFANode;
 
-public class Transition {
+public class DFATransition {
 	CharacterClass match;
-	Node start;
-	Node end;
+	DFANode start;
+	DFANode end;
 	
-	public Transition(Node s, Node e, CharacterClass m) {
+	public DFATransition(DFANode s, DFANode e, CharacterClass m) {
 		start = s;
 		end = e;
 		match = m;
@@ -22,11 +22,11 @@ public class Transition {
 		return match.isMatched(c);
 	}
 	
-	public Node start() {
+	public DFANode start() {
 		return start;
 	}
 	
-	public Node end() {
+	public DFANode end() {
 		return end;
 	}
 	
