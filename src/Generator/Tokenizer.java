@@ -1,5 +1,9 @@
 package Generator;
 
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Scanner;
+
 import Generator.Token.op_code;
 
 /** 
@@ -13,97 +17,270 @@ public class Tokenizer {
 	int pos;
 	boolean potentialEpsilon; 	// Alerts the tokenizer of incoming epsilon match
 	boolean regexMode;
+	List<String> ids;
 	
 	static String[] keywords = {
 								 "(", ")", "|", "*", "+", "$", "\\",	// Regex Keywords
-								 ".", "[", "]", "^", "-"				// CharacterClass Keywords
+								 ".", "[", "]", "^", "-", "IN"			// CharacterClass Keywords
 							   };
 	
 	static String[] skipper = { " ", "\t", "\n", "\r" };
 	
 	public Tokenizer(String in) {
-		this(in, true);
-	}
-	
-	public Tokenizer(String in, boolean rMode) {
 		code = in;
 		pos = 0;
 		potentialEpsilon = true;
-		regexMode = rMode;
+		regexMode = true;
+		ids = new LinkedList<String>();
 	}
 	
 	public int pos() {
 		return pos;
 	}
 	
-	public Token peek() {
+	public List<String> ids() {
+		return ids;
+	}
+	
+	public void tokenize(String in) {
+		code = in;
+		reset();
+	}
+	
+	public void reset() {
+		pos = 0;
+		potentialEpsilon = true;
+		regexMode = true;
+	}
+	
+	public Token peek(int n) {
+		// Save state
+		int _pos = pos;
+		boolean _potentialEpsilon = potentialEpsilon;
+		boolean _regexMode = regexMode;
 		
-		return null;
+		// Peek ahead
+		Token nextToken = null;
+		while(n-- > 0) {
+			nextToken = next();
+		}
+		
+		// Restore state
+		pos = _pos;
+		potentialEpsilon = _potentialEpsilon;
+		regexMode = _regexMode;
+		
+		return nextToken;
+	}
+	
+	public Token peek() {
+		return peek(1);
+	}
+	
+	public void match(op_code op) {
+		match(new Token(op,""));
+	}
+	
+	public void match(Token token) {
+		if(token.equals(peek())) {
+			Token m = next();
+			System.out.println("Matched token: " + m);
+		} else {
+			System.err.println("Failed to match token: Position " + pos + " in " + code + "\n" +
+								"\tExpected: " + token  + "\n" +
+								"\t  Actual: " + peek() + "\n" );
+		}
+	}
+	
+	public boolean hasNext() {
+		return peek().operand != op_code.eoi;
 	}
 	
 	public Token next() {
 		if(pos == code.length()) {
-			return null;
+			if(potentialEpsilon) {
+				potentialEpsilon = false;
+				return new Token(op_code.epsilon, "");
+			} else {
+				return new Token(op_code.eoi, "");
+			}
 		}
 		// Consume whitespace
 		skip();
 		// Next keyword
-		String op = code.substring(pos,pos+1);
+		String op = nextKeyword();
 		// Parse token
 		Token token;
 		switch (op) {
-			case "(" :
+		case "(" :
+			if(regexMode) {
 				potentialEpsilon = true;
-				token = new Token(op_code.left_paren, "");
+				token = new Token(op_code.left_paren, op);
 				pos++;
-				break;
-			case ")" :
+			} else {
+				potentialEpsilon = false;
+				token = new Token(op_code.cls_char, op);
+				pos++;
+			}
+			break;
+		case ")" :
+			if(regexMode) {
 				if(potentialEpsilon) {
 					potentialEpsilon = false;
 					token = new Token(op_code.epsilon, "");
 				} else {
-					token = new Token(op_code.right_paren, "");
+					token = new Token(op_code.right_paren, op);
 					pos++;
 				}
-				break;
-			case "|" :
+			} else {
+				potentialEpsilon = false;
+				token = new Token(op_code.cls_char, op);
+				pos++;
+			}
+			break;
+		case "|" :
+			if(regexMode) {
 				if(potentialEpsilon) {
 					potentialEpsilon = false;
 					token = new Token(op_code.epsilon, "");
 				} else {
 					potentialEpsilon = true;
-					token = new Token(op_code.or, "");
+					token = new Token(op_code.or, op);
+					pos++;
 				}
-				break;
-			case "*" :
-				token = new Token(op_code.star, "");
+			} else {
+				potentialEpsilon = false;
+				token = new Token(op_code.cls_char, op);
 				pos++;
-				break;
-			case "+" :
-				token = new Token(op_code.plus, "");
+			}
+			break;
+		case "*" :
+			if(regexMode) {
+				token = new Token(op_code.star, op);
 				pos++;
-				break;
-			case "$" :
+			} else {
+				potentialEpsilon = false;
+				token = new Token(op_code.cls_char, op);
+				pos++;
+			}
+			break;
+		case "+" :
+			if(regexMode) {
+				token = new Token(op_code.plus, op);
+				pos++;
+			} else {
+				potentialEpsilon = false;
+				token = new Token(op_code.cls_char, op);
+				pos++;
+			}
+			break;
+		case "$" :
+			if(regexMode) {
+				potentialEpsilon = false;
 				String id = findId();
 				token = new Token(op_code.id, id);
 				pos += id.length();
-				break;
-			case "\\" :
-				token = new Token(op_code.re_char, code.substring(pos+1,pos+2));
-				pos += 2;
-				break;
-			default :
+			} else {
+				potentialEpsilon = false;
+				token = new Token(op_code.cls_char, op);
+				pos++;
+			}
+			break;
+		case "[" :
+			if(regexMode) {
+				regexMode = false;
+				potentialEpsilon = true;
+				token = new Token(op_code.left_brac, op);
+				pos++;
+			} else {
+				potentialEpsilon = false;
+				token = new Token(op_code.cls_char, op);
+				pos++;
+			}
+			break;
+		case "]" :
+			if(!regexMode) {
+				if(potentialEpsilon) {
+					potentialEpsilon = false;
+					token = new Token(op_code.epsilon, "");
+				} else {
+					regexMode = true;
+					token = new Token(op_code.right_brac, op);
+					pos++;
+				}
+			} else {
+				potentialEpsilon = false;
 				token = new Token(op_code.re_char, op);
 				pos++;
-				
-		}		
+			}
+			break;
+		case "." :
+			if(regexMode) {
+				potentialEpsilon = false;
+				token = new Token(op_code.match_all, op);
+				pos++;
+			} else {
+				potentialEpsilon = false;
+				token = new Token(op_code.cls_char, op);
+				pos++;
+			}
+			break;
+		case "-" :
+			if(!regexMode) {
+				token = new Token(op_code.range, op);
+				pos++;
+			} else {
+				potentialEpsilon = false;
+				token = new Token(op_code.re_char, op);
+				pos++;
+			}
+			break;
+		case "^" :
+			if(!regexMode) {
+				potentialEpsilon = false;
+				token = new Token(op_code.exclude, op);
+				pos++;
+			} else {
+				potentialEpsilon = false;
+				token = new Token(op_code.re_char, op);
+				pos++;
+			}
+			break;
+		case "IN" :
+			if(regexMode) {
+				token = new Token(op_code.in, op);
+				pos += 2;
+			} else {
+				potentialEpsilon = false;
+				token = new Token(op_code.cls_char, "I");
+				pos++;
+			}
+			break;
+		case "\\" :
+			if(regexMode) {
+				token = new Token(op_code.re_char, code.substring(pos+1,pos+2));
+			} else {
+				token = new Token(op_code.cls_char, code.substring(pos+1,pos+2));
+			}
+			potentialEpsilon = false;
+			pos += 2;
+			break;
+		default :
+			if(regexMode) {
+				token = new Token(op_code.re_char, op);
+			} else {
+				token = new Token(op_code.cls_char, op);
+			}
+			potentialEpsilon = false;
+			pos++;
+		}
 		// Consume trailing whitespace
 		skip();
 		return token;
 	}
 	
 	private void skip() {
-		if(pos == code.length()) {
+		if(pos == code.length() || !regexMode) {
 			return;
 		} else if(isSpace(code.substring(pos,pos+1))) {
 			pos += 1;
@@ -121,14 +298,41 @@ public class Tokenizer {
 	}
 	
 	private String findId() {
-		return null;
+		// Find existing match
+		String id = "";
+		for(String i : ids) {
+			int match = code.indexOf(i, pos);
+			if(match == pos) {
+				id = i;
+			}
+		}
+		// Create new identifier greedily
+		if(id.isEmpty()) {
+			Scanner S = new Scanner(code.substring(pos));
+			id = S.next();
+			S.close();
+			// Add to list of ids
+			ids.add(id);
+		}
+		
+		//FIXME: Handle ids with overlapping names.
+		// 		 $PAPER and $PAPERWATER
+		//FIXME: Ambiguous match
+		// 		 $ID, $ID1, and $ID2
+		// 		 regex = $ID1234$ID234
+		
+		return id;
 	}
 	
 	private String nextKeyword() {
-		return null;
-	}
-	
-	public void reset() {
-		pos = 0;
+		String keyword = code.substring(pos,pos+1);
+		// For matching keywords with length > 1
+		for(String k : keywords) {
+			int dist = code.substring(pos).indexOf(k);
+			if(dist == 0) {
+				keyword = k;
+			}
+		}
+		return keyword;
 	}
 }

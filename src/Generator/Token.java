@@ -1,7 +1,7 @@
 package Generator;
 
 public class Token {
-	enum op_code {
+	public enum op_code {
 		left_paren,
 		right_paren,
 		or,
@@ -15,8 +15,9 @@ public class Token {
 		match_all,		// "."
 		range,			// "-"
 		exclude,		// "^"
-		cls_char,
-		in				// "IN"
+		cls_char,		// 
+		in,				// "IN"
+		eoi
 	}
 	
 	public op_code operand;
@@ -25,5 +26,13 @@ public class Token {
 	public Token(op_code o, String v) {
 		operand = o;
 		value = v;
+	}
+	
+	public String toString() {
+		return operand + ": " + value;
+	}
+	
+	public boolean equals(Token other) {
+		return operand == other.operand;
 	}
 }

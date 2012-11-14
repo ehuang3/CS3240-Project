@@ -52,4 +52,15 @@ public class Transition {
 	public Node end() {
 		return end;
 	}
+	
+	public String toString() {
+		String out = "";
+		if(epsilon) {
+			out += "ε";
+		} else {
+			out += match;
+		}
+		out += " --> " + end;
+		return out;
+	}
 }

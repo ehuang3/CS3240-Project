@@ -1,42 +1,38 @@
-package Generator.NFA;
+package Generator.DFA;
 
 import java.util.LinkedList;
 import java.util.List;
 
 import Generator.Character.CharacterClass;
 
-/**
- * A node in a NFA.
- * 
- * @author eric
- *
- */
 public class Node {
-	boolean terminal;
 	List<Transition> adj;
+	boolean terminal;
+	String token;
 	
 	static int number = 0;
 	int color;
 	String name;
 	
 	public Node() {
-		this(false);
-	}
-	
-	public Node(boolean isFinal) {
-		terminal = isFinal;
 		adj = new LinkedList<Transition>();
+		terminal = false;
+		token = "";
 		
 		name = String.valueOf(++number);
 		color = 0;
 	}
 	
-	public boolean isFinal() {
+	public boolean isTerminal() {
 		return terminal;
 	}
 	
 	public void terminal(boolean f) {
 		terminal = f;
+	}
+	
+	public void token(String t) {
+		token = t;
 	}
 	
 	public List<Transition> adjacencyList() {
@@ -47,11 +43,7 @@ public class Node {
 		adj.add(new Transition(this, end, match));
 	}
 	
-	public void addEpsilonTransition(Node end) {
-		adj.add(new Transition(this, end));
-	}
-	
 	public String toString() {
-		return "Node " + name + (terminal ? " (final)" : "");
+		return "Node " + name + (terminal ? (" (final) " + token) : "");
 	}
 }

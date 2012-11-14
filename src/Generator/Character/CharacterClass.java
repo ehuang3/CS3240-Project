@@ -1,21 +1,96 @@
 package Generator.Character;
 
-public class CharacterClass {
+public class CharacterClass 
+{	
+	boolean[] valid;
+	String name;
 	
-	
-	public boolean isMatched(char c) {
-		return false;
+	public CharacterClass()
+	{
+		this("");
 	}
 	
-	public boolean isMatched(String c) {
-		return false;
+	public CharacterClass(String name)
+	{
+		valid = new boolean[256];
+		this.name = name;
+	}
+
+	public boolean isMatched(char c) 
+	{
+		return valid[(int)c];
 	}
 	
-	public CharacterClass union(CharacterClass c) {
-		return new CharacterClass();
+	public void accept(char c)
+	{
+		valid[(int)c] = true;
 	}
 	
-	public CharacterClass intersect(CharacterClass c) {
-		return new CharacterClass();
+	public void acceptAll()
+	{
+		for(int a = 0; a < valid.length; a++)
+		{
+			valid[a] = true;
+		}
+	}
+	
+	public void acceptBoundary(char start, char end)
+	{
+		for(int a = (int)start; a <= (int)end; a++)
+		{
+			valid[(char)a] = true;
+		}
+	}
+
+	public CharacterClass union(CharacterClass c) 
+	{
+		CharacterClass temp = new CharacterClass(name);
+		for(int a = 0; a < valid.length; a++)
+		{
+			if(c.valid[a] || valid[a])
+			{
+				temp.valid[a] = true;
+			}
+		}
+		return temp;
+	}
+	
+	public CharacterClass intersect(CharacterClass c)
+	{
+		CharacterClass temp = new CharacterClass(name);
+		for(int a = 0; a < valid.length; a++)
+		{
+			if(c.valid[a] && valid[a])
+			{
+				temp.valid[a] = true;
+			}
+		}
+		return temp;
+	}
+	
+	public CharacterClass exclude(CharacterClass c)
+	{
+		CharacterClass temp = new CharacterClass(name);
+		for(int a = 0; a < valid.length; a++)
+		{
+			if(valid[a] && !c.valid[a])
+			{
+				//System.out.println("setting: " + (char)a);
+				temp.valid[a] = true;
+			}
+		}
+		return temp;
+	}
+	
+	public void print()
+	{
+		System.out.println("\n\nprinting character class\n");
+		for(int a = 0; a < valid.length; a++)
+		{
+			if(valid[a])
+			{
+				System.out.print((char)a + "  ");
+			}
+		}
 	}
 }
