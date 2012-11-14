@@ -51,9 +51,9 @@ public class NFASimulator {
 		Result r = null;
 		while(!Q.isEmpty()) {
 			Clone c = Q.poll();
-			Node  u = c.node;
-			List<Transition> adj = u.adjacencyList();
-			for(Transition e : adj) {
+			NFANode  u = c.node;
+			List<NFATransition> adj = u.adjacencyList();
+			for(NFATransition e : adj) {
 				if(e.isEpsilonTransition()) {
 					Q.add(new Clone(e.end(), c.pos, c.token));
 					numMoves ++;
@@ -79,11 +79,11 @@ public class NFASimulator {
 	}
 	
 	private class Clone {
-		Node node;
+		NFANode node;
 		int pos;
 		String token;
 		
-		private Clone(Node u, int p, String t) {
+		private Clone(NFANode u, int p, String t) {
 			node = u;
 			pos = p;
 			token = t;

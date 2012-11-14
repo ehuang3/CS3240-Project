@@ -11,21 +11,21 @@ import Generator.Character.CharacterClass;
  * @author eric
  *
  */
-public class Node {
+public class NFANode {
 	boolean terminal;
-	List<Transition> adj;
+	List<NFATransition> adj;
 	
 	static int number = 0;
 	int color;
 	String name;
 	
-	public Node() {
+	public NFANode() {
 		this(false);
 	}
 	
-	public Node(boolean isFinal) {
+	public NFANode(boolean isFinal) {
 		terminal = isFinal;
-		adj = new LinkedList<Transition>();
+		adj = new LinkedList<NFATransition>();
 		
 		name = String.valueOf(++number);
 		color = 0;
@@ -39,16 +39,16 @@ public class Node {
 		terminal = f;
 	}
 	
-	public List<Transition> adjacencyList() {
+	public List<NFATransition> adjacencyList() {
 		return adj;
 	}
 	
-	public void addTransition(Node end, CharacterClass match) {
-		adj.add(new Transition(this, end, match));
+	public void addTransition(NFANode end, CharacterClass match) {
+		adj.add(new NFATransition(this, end, match));
 	}
 	
-	public void addEpsilonTransition(Node end) {
-		adj.add(new Transition(this, end));
+	public void addEpsilonTransition(NFANode end) {
+		adj.add(new NFATransition(this, end));
 	}
 	
 	public String toString() {

@@ -14,16 +14,16 @@ import Generator.Character.CharacterClass;
  */
 public class NFA {
 	String name;
-	Node start;
-	Node end;
+	NFANode start;
+	NFANode end;
 	private boolean epsilonNFA;
 	
 	/**
 	 * Default NFA constructor returns a no-match NFA.
 	 */
 	private NFA() {
-		start = new Node();
-		end = new Node();
+		start = new NFANode();
+		end = new NFANode();
 		
 		end.terminal(true);
 		
@@ -74,7 +74,7 @@ public class NFA {
 	 * 
 	 * @return start node of NFA
 	 */
-	public Node start() {
+	public NFANode start() {
 		return start;
 	}
 	
@@ -82,7 +82,7 @@ public class NFA {
 	 * 
 	 * @return end node of NFA
 	 */
-	public Node end() {
+	public NFANode end() {
 		return end;
 	}
 	
@@ -93,8 +93,8 @@ public class NFA {
 	 * @return self
 	 */
 	public NFA or(NFA B) {
-		Node S = new Node();
-		Node E = new Node();
+		NFANode S = new NFANode();
+		NFANode E = new NFANode();
 		
 		S.addEpsilonTransition(start);
 		end.addEpsilonTransition(E);
@@ -123,8 +123,8 @@ public class NFA {
 	 * @return
 	 */
 	public NFA and(NFA B) {
-		Node S = new Node();
-		Node E = new Node();
+		NFANode S = new NFANode();
+		NFANode E = new NFANode();
 		
 		S.addEpsilonTransition(start);
 		end.addEpsilonTransition(B.start);
@@ -153,8 +153,8 @@ public class NFA {
 		if(isEpsilonNFA()) {
 			return this;
 		} else {
-			Node S = new Node();
-			Node E = new Node();
+			NFANode S = new NFANode();
+			NFANode E = new NFANode();
 			
 			S.addEpsilonTransition(start);
 			end.addEpsilonTransition(start);
@@ -182,8 +182,8 @@ public class NFA {
 		if(isEpsilonNFA()) {
 			return this;
 		} else {
-			Node S = new Node();
-			Node E = new Node();
+			NFANode S = new NFANode();
+			NFANode E = new NFANode();
 			
 			S.addEpsilonTransition(start);
 			end.addEpsilonTransition(start);
@@ -204,13 +204,13 @@ public class NFA {
 	public String toString() {
 		String out = "";
 		
-		Stack<Node> Q = new Stack<Node>();
+		Stack<NFANode> Q = new Stack<NFANode>();
 		Q.add(start);
 		while(!Q.isEmpty()) {
-			Node u = Q.pop();
+			NFANode u = Q.pop();
 			u.color = 1;
 			out += u + "\n";
-			for(Transition e : u.adjacencyList()) {
+			for(NFATransition e : u.adjacencyList()) {
 				if(e.end.color == 0) {
 					Q.add(e.end);
 				}
@@ -223,9 +223,9 @@ public class NFA {
 		// Uncolor
 		Q.add(start);
 		while(!Q.isEmpty()) {
-			Node u = Q.pop();
+			NFANode u = Q.pop();
 			u.color = 0;
-			for(Transition e : u.adjacencyList()) {
+			for(NFATransition e : u.adjacencyList()) {
 				if(e.end.color == 1) {
 					Q.add(e.end);
 				}

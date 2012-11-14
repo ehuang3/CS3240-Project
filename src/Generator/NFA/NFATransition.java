@@ -8,22 +8,22 @@ import Generator.Character.CharacterClass;
  * @author eric
  *
  */
-public class Transition {
+public class NFATransition {
 	CharacterClass match;
-	Node start;
-	Node end;
+	NFANode start;
+	NFANode end;
 	boolean epsilon;
 	
-	public Transition() {
+	public NFATransition() {
 		this(null,null,null);
 	}
 	
-	public Transition(Node s, Node e) {
+	public NFATransition(NFANode s, NFANode e) {
 		this(s, e, new CharacterClass());
 		epsilon = true;
 	}
 	
-	public Transition(Node s, Node e, CharacterClass c) {
+	public NFATransition(NFANode s, NFANode e, CharacterClass c) {
 		start = s;
 		end = e;
 		match = c;
@@ -45,11 +45,11 @@ public class Transition {
 		return epsilon;
 	}
 	
-	public Node start() {
+	public NFANode start() {
 		return start;
 	}
 	
-	public Node end() {
+	public NFANode end() {
 		return end;
 	}
 	
