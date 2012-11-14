@@ -1,6 +1,5 @@
 package TableWalker;
 
-import java.io.BufferedReader;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,25 +14,17 @@ import Generator.DFA.Transition;
  */
 public class tablewalker {
 	
-	//subject to a lot of change............gg.
-	
-	
-	
 	DFA dfa;
-	List<Transition> list;
 	Transition transition;
 	String input;
 	int i, j;
-	ArrayList tokenlist;
-	
+	List<Transition> list;
+	ArrayList<String> tokenlist;
 
 	public tablewalker(DFA dfa, String input){
 		this.dfa = dfa;
-
 		this.input = input;
-	}
-	
-	
+	}	
 	
 	/**
 	 * This method takes in the input String (could be a long text), takes each character at a time and walks the DFA table.
@@ -44,19 +35,24 @@ public class tablewalker {
 	public void walkDFA(){
 		
 		char current;
-		String token;
+		String token = "";
 		Node now = dfa.start();
 		List<Transition> list;
-		j=0;
+		
 		for(i=0; i < input.length(); i++){
+			j = 0;
+			list = now.adjacencyList();
+			Transition transition = list.get(j);
+			int size = list.size();
+			boolean found = false;	
+			boolean valid = true;
+			
 			current = input.charAt(i);
 			token += current;
 			
-			list = now.adjacencyList();
-			Transition transition = list.get(j);
+			if(!valid)
+				now = dfa.start();
 			
-			int size = list.size();
-			boolean found = false;			
 			while(!found && j < size){
 				
 				if(transition.isTriggered(current)){
@@ -68,9 +64,10 @@ public class tablewalker {
 						
 			}
 			
-			if(!found && j = size-1){
+			if(!found && j == size-1){
 				tokenlist.add(token);
 				token = "";
+				valid = false;
 			}
 			
 					
@@ -83,7 +80,7 @@ public class tablewalker {
 	 * This method returns the list of token.
 	 * @return
 	 */
-	public String[] getTokenlist(){
+	public ArrayList<String> getTokenlist(){
 		
 		return tokenlist;
 	}
@@ -93,9 +90,9 @@ public class tablewalker {
 	 */
 	public void printTokens(){
 		
-		for(i=0; i < tokenlist.length; i++){
+		for(i=0; i < tokenlist.size(); i++){
 			
-			System.out.println(tokenlist[i]);
+			System.out.println(tokenlist.get(i));
 			
 		}
 			
