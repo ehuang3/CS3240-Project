@@ -1,17 +1,18 @@
 package Generator.Character;
 
-import java.util.ArrayList;
-
 public class CharacterClass 
 {	
 	boolean[] valid;
-	ArrayList<Character> real;
 	String name;
+	
+	public CharacterClass()
+	{
+		this("");
+	}
 	
 	public CharacterClass(String name)
 	{
 		valid = new boolean[256];
-		real = new ArrayList<Character>();
 		this.name = name;
 	}
 
@@ -33,33 +34,63 @@ public class CharacterClass
 		}
 	}
 	
-	public void acceptBoundary(int start, int end)
+	public void acceptBoundary(char start, char end)
 	{
 		for(int a = (int)start; a <= (int)end; a++)
 		{
 			valid[(char)a] = true;
 		}
 	}
-	public void getAllCharacterHelper()
+
+	public CharacterClass union(CharacterClass c) 
 	{
-		for(int a = 0; a < 129; a++)
+		CharacterClass temp = new CharacterClass(name);
+		for(int a = 0; a < valid.length; a++)
+		{
+			if(c.valid[a] || valid[a])
+			{
+				temp.valid[a] = true;
+			}
+		}
+		return temp;
+	}
+	
+	public CharacterClass intersect(CharacterClass c)
+	{
+		CharacterClass temp = new CharacterClass(name);
+		for(int a = 0; a < valid.length; a++)
+		{
+			if(c.valid[a] && valid[a])
+			{
+				temp.valid[a] = true;
+			}
+		}
+		return temp;
+	}
+	
+	public CharacterClass exclude(CharacterClass c)
+	{
+		CharacterClass temp = new CharacterClass(name);
+		for(int a = 0; a < valid.length; a++)
+		{
+			if(valid[a] && !c.valid[a])
+			{
+				//System.out.println("setting: " + (char)a);
+				temp.valid[a] = true;
+			}
+		}
+		return temp;
+	}
+	
+	public void print()
+	{
+		System.out.println("\n\nprinting character class\n");
+		for(int a = 0; a < valid.length; a++)
 		{
 			if(valid[a])
 			{
-				real.add((char)a);
+				System.out.print((char)a + "  ");
 			}
 		}
-	}
-	
-	public CharacterClass union(CharacterClass c) 
-	{
-		for(int a = 0; a < valid.length; a++)
-		{
-			if(c.valid[a])
-			{
-				valid[a] = true;
-			}
-		}
-		return this;
 	}
 }

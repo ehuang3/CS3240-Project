@@ -1,5 +1,7 @@
 package Generator.Character;
 
+import java.util.HashMap;
+
 import Generator.Token;
 import Generator.Token.op_code;
 import Generator.Tokenizer;
@@ -7,170 +9,149 @@ import Generator.Tokenizer;
 public class CharacterClassFactory 
 {
 	Tokenizer tokenizer;
-	CharacterClass cc;
+	HashMap<String, CharacterClass> map;
 	Token token, peekToken;
 	op_code top, ptop;
-	boolean exclude;
 	char start, end;
 	
 	public CharacterClassFactory(Tokenizer tokenizer)
 	{
-		this.tokenizer = tokenizer;
+		this.tokenizer = tokenizer;  
+		map = new HashMap<String, CharacterClass>();
 	}
 	
-	public CharacterClass generateCharacterClass(String regex)
+	public CharacterClass build(String regex)  
 	{
-		token = tokenizer.next();
-		top = token.operand;
+		tokenizer.tokenize(regex);
 		
-		//parse the regex string for tokens
-		while(top != op_code.eoi)
+		System.out.println("\tinside build()");
+		peekToken = tokenizer.peek();  //consume 1st token (may be a name or [) 
+		CharacterClass temp = new CharacterClass();
+		
+		if(peekToken.operand == op_code.id)  //name of char class (1st token)
 		{
-			if(top == op_code.id)  //get the character class's name
-			{
-				cc = new CharacterClass(token.value);
-			}
-			else if(top == op_code.left_brac)  //detected [
-			{
-				matchBracket();  
-			}
-			else if(top == op_code.left_paren)  //detected (
-			{
-				
-			}
-			else if(top == op_code.match_all)  //detected .
-			{
-				cc.acceptAll();
-			}
-			else if(top == op_code.or)  //detected |
-			{
-				
-			}
-			
-			top = token.operand;  //sync the token operand for next iteration
+			consume(1);  //consume name of class 1
+			temp.name = token.value;  //set char class name
+			map.put(temp.name, temp);  //add char class with a name to map
+			System.out.println("\t\t\t\t\t\t\t\t\tname: " + token.value + "\tsize: " + map.size());
 		}
 		
-		return cc;
+		temp = charClass();  //get first [^...] or [...] char class object 
+		return temp;
 	}
 	
-	public void matchBracket()
-	{
-		advancePeek();  //look ahead one token  
+	public CharacterClass charClass()  //start at [ not consumed (may be part of named or no named line
+	{	
+		CharacterClass temp = null;
 		
-		while(ptop != op_code.right_brac)  //keep checking for exclude, range or char matching
+		peekToken = tokenizer.peek();  //peek at next token to determine if it is [
+		if(peekToken.operand == op_code.left_brac) 
 		{
-			matchExclude();
-			matchRange();
-			matchCharacter();
+			//token = tokenizer.next();  //consume [
+			consume(1);
+			temp = basic();  //get first [^...] or [...] char class object  
 		}
-	}
-	
-	public void matchParenthesis()
-	{
 		
-	}
-	
-	public void matchOr()
-	{
-		if(ptop == op_code.or)
+		/*
+		System.out.println("back from first char class");
+		System.out.println("class 1: ");
+		temp.print();
+		System.out.println("\n\n");
+		*/
+		
+		//just consumed ]
+		peekToken = tokenizer.peek();
+		
+		//temp is a char class of [^...] or [...], need to check for IN 
+		//current token could be IN if not finished
+		if(peekToken.operand == op_code.in)  //IN
 		{
+			CharacterClass temp2 = null;
 			
-		}
-	}
-	
-	public void matchExclude()
-	{
-		if(ptop == op_code.exclude)
-		{
-			rangeBoundary();  //[abc] or [a-z] ????
-			advancePeek();  
+			//token = tokenizer.next();  //consume IN
+			consume(1);
 			
-			if(ptop == op_code.in)  //detect IN
+			peekToken = tokenizer.peek();  //check if next token is $___ or [
+			if(peekToken.operand == op_code.left_brac)
 			{
-				token = tokenizer.next();
-				top = token.operand;
+				//token = tokenizer.next();  //consume [ 
+				consume(1);
 				
-				if(top == op_code.id)  //next token is a char class
+				temp2 = charList();  //generate another [...] to exclude from
+			}
+			else if(peekToken.operand == op_code.id) 
+			{
+				consume(1);  //consume name of class 2
+				if(map.containsKey(token.value))
 				{
-					if(token.value.equals("$CHAR"))
-					{
-						for(int a = 65; a <= 122; a++)
-						{
-							if(!(a >= 91 && a <= 96))
-							{
-								if(!(a >= start && a <= end))
-								{
-									cc.accept((char)a);
-								}
-							}
-						}
-					}
-					else if(token.value.equals("$UPPER"))
-					{
-						for(int a = 65; a <= 90; a++)
-						{
-							if(!(a >= start && a <= end))
-							{
-								cc.accept((char)a);
-							}
-						}
-					}
-					else if(token.value.equals("$DIGIT"))
-					{
-						for(int a = 48; a <= 57; a++)
-						{
-							if(!(a >= start && a <= end))
-							{
-								cc.accept((char)a);
-							}
-						}
-					}
-					else if(token.value.equals("$NON-ZERO"))
-					{
-						for(int a = 49; a <= 57; a++)
-						{
-							if(!(a >= start && a <= end))
-							{
-								cc.accept((char)a);
-							}
-						}
-					}
+					temp2 = map.get(token.value);  //get existing [...] from map
 				}
 			}
-		}
+
+			temp = temp2.exclude(temp);  //exclude everything of temp inside temp2
+		}	
+		return temp;
 	}
 	
-	public void matchRange()
+	public CharacterClass basic()  //build [...], already consumed [
 	{
-		if(ptop == op_code.range)  //range token
+		System.out.println("\tinside basic()");
+		peekToken = tokenizer.peek();  //check if next token is ^
+		
+		if(peekToken.operand == op_code.exclude)  //[^ exclude
 		{
-			rangeBoundary();  //set start and end bounds
-			cc.acceptBoundary(start, end);  //accept all characters in the bounds
-			advancePeek();  //peek before leaving the match
+			//token = tokenizer.next();  //consume ^
+			consume(1);
 		}
+		return charList();
 	}
 	
-	public void rangeBoundary()
+	public CharacterClass charList()  //start by consuming 1st cls_char token
 	{
-		start = token.value.charAt(0);  //set current token as start bound
-		token = tokenizer.next();  //consume range token
-		token = tokenizer.next();  //consume end token
-		end = token.value.charAt(0);  //set end bound
+		System.out.println("\tinside charList()");
+		CharacterClass temp = new CharacterClass();
+		peekToken = tokenizer.peek();  //check if next token is cls_char
+		
+		while(peekToken.operand != op_code.right_brac)  //keep matching until ]
+		{	
+			//check if next token is range to determine if current token is cls_char or start of range
+			if(peekToken.operand == op_code.range)
+			{ 
+				start = token.value.charAt(0);  //set current token as start bound
+				System.out.println("\t\t\t\t\t\t\t\t\tstart: " + start);
+				
+				//token = tokenizer.next();  //consume range
+				//token = tokenizer.next();  //consume end
+				consume(2);
+				
+				end = token.value.charAt(0);  //set current token as end bound
+				System.out.println("\t\t\t\t\t\t\t\t\tend: " + end);
+				
+				temp.acceptBoundary(start, end);  //add range to char class
+			}	
+			
+			if(peekToken.operand == op_code.cls_char)
+			{
+				//token = tokenizer.next();  //consume current cls_char
+				consume(1);
+				
+				temp.accept(token.value.charAt(0));  //add current cls_char to char class
+			}
+			
+			peekToken = tokenizer.peek();  //check if next token is cls_char
+		}
+		
+		//token = tokenizer.next();  //consume ]
+		consume(1);
+		return temp;  //return finished char class
 	}
 	
-	public void matchCharacter()
+	public void consume(int i)
 	{
-		while(ptop == op_code.cls_char)  //individual cls_char tokens
+		for(int a = 0; a < i; a++)
 		{
-			token = tokenizer.next();  //consume current token for token == peekToken
-			cc.accept(token.value.charAt(0));  //add current token to character class
-			advancePeek();  //move peek by one
+			token = tokenizer.next();
+			System.out.println("\t\t\tconsumed: " + token.value + "\ttype: " + token.operand);
 		}
-	}
-	
-	public void advancePeek()
-	{
-		peekToken = tokenizer.peek();  
-		ptop = peekToken.operand;
 	}
 }
