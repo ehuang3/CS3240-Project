@@ -1,6 +1,7 @@
 package TableWalker;
 
 import java.io.BufferedReader;
+import java.util.ArrayList;
 import java.util.List;
 
 import Generator.DFA.Node;
@@ -15,15 +16,20 @@ import Generator.DFA.Transition;
 public class tablewalker {
 	
 	//subject to a lot of change............gg.
+	
+	
+	
 	DFA dfa;
-	List<Transition> transition = ;
+	List<Transition> list;
+	Transition transition;
 	String input;
-	int i;
-	String[] tokenlist;
+	int i, j;
+	ArrayList tokenlist;
+	
 
-	public tablewalker(DFA dfa, List<Transition> transition, String input){
+	public tablewalker(DFA dfa, String input){
 		this.dfa = dfa;
-		this.transition = transition;
+
 		this.input = input;
 	}
 	
@@ -39,19 +45,38 @@ public class tablewalker {
 		
 		char current;
 		String token;
-		Node start = dfa.start();
-		Node next = ; //need to know how
-		
+		Node now = dfa.start();
+		List<Transition> list;
+		j=0;
 		for(i=0; i < input.length(); i++){
 			current = input.charAt(i);
+			token += current;
 			
-			if(transition.contains(new Transition(start, end, )))
+			list = now.adjacencyList();
+			Transition transition = list.get(j);
 			
-			
-			
+			int size = list.size();
+			boolean found = false;			
+			while(!found && j < size){
+				
+				if(transition.isTriggered(current)){
+					now = transition.end();
+					found = true;
+				}
 
+				transition = list.get(++j);
+						
+			}
 			
+			if(!found && j = size-1){
+				tokenlist.add(token);
+				token = "";
+			}
+			
+					
 		}
+		
+		
 	}
 
 	/**
