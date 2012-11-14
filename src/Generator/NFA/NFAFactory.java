@@ -10,19 +10,21 @@ import Generator.Token.op_code;
 
 public class NFAFactory {
 	CharacterClassFactory ccFactory;
-	Map<String, CharacterClass> ccMap;
 	Tokenizer T;
 	
 	public NFAFactory() {
 		T = new Tokenizer("");
+		ccFactory = new CharacterClassFactory(T);
 	}
 	
-	public void classes(Map<String, CharacterClass> map) {
-		ccMap = map;
+	public void charClassFactory(CharacterClassFactory ccf) {
+		ccFactory = ccf;
+		ccFactory.tokenizer = T;
 	}
 	
 	public void tokenizer(Tokenizer t) {
 		T = t;
+		ccFactory.tokenizer = t;
 	}
 	
 	public NFA build(String in) {
@@ -100,19 +102,24 @@ public class NFAFactory {
 		NFA nfa = null;
 		switch (T.peek().operand) {
 		case left_brac :
-			//FIXME: Call clsFactory subroutine
+			nfa = new NFA( ccFactory.charClass() );
 			break;
 		case match_all :
 			//FIXME: Replace with match-all cls
-			nfa = new NFA( new CharacterClass(".") );
+			CharacterClass cls = new CharacterClass();
+			cls.acceptAll();
+			nfa = new NFA( cls );
 			T.match(op_code.match_all);
+			break;
 		case id :
 			//FIXME: Implement ccMap
-			nfa = new NFA( ccMap.get(T.peek().value) );
+			nfa = new NFA( ccFactory.getCharClass(T.peek().value) );
 			T.match(op_code.id);
+			break;
 		case epsilon :
 			T.match(op_code.epsilon);
 			nfa = NFA.EpsilonNFA();
+			break;
 		default :
 			// Return null to signal no more terminals to match
 		}

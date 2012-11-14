@@ -65,7 +65,7 @@ public class NFASimulator {
 					}
 				}
 			}
-			//System.out.println(c);
+			System.out.println(c);
 			if(u.isFinal() && c.pos == code.length()) {
 				r = new Result(c.token, numMoves);
 				break;

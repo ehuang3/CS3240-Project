@@ -15,6 +15,10 @@ public class CharacterClass
 		valid = new boolean[256];
 		this.name = name;
 	}
+	
+	public boolean isMatched(String c) {
+		return isMatched(c.charAt(0));
+	}
 
 	public boolean isMatched(char c) 
 	{
@@ -92,5 +96,26 @@ public class CharacterClass
 				System.out.print((char)a + "  ");
 			}
 		}
+	}
+	
+	public String toString() {
+ 		String out = "";
+ 		boolean rangeNotation = false;
+ 		for(int i=0; i<valid.length; i++) {
+ 			if(valid[i] && !rangeNotation) {
+ 				out += (char)(i);
+ 				rangeNotation = true;
+ 			}
+ 			if(!valid[i] && rangeNotation) {
+ 				if(out.charAt(out.length()-1) != (char)(i - 1)) {
+ 					out += "-" + (char)(i - 1);
+ 				}
+ 				rangeNotation = false;
+ 			}
+ 		}
+ 		if(rangeNotation) {
+ 			out += "-" + "HAHA";
+ 		}
+ 		return "[" + out + "]";
 	}
 }
