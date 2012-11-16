@@ -23,6 +23,10 @@ public class NFANode {
 		this(false);
 	}
 	
+	public NFANode(NFANode other) {
+		this(other.terminal);
+	}
+	
 	public NFANode(boolean isFinal) {
 		terminal = isFinal;
 		adj = new LinkedList<NFATransition>();
@@ -43,10 +47,19 @@ public class NFANode {
 		return adj;
 	}
 	
+	/**
+	 * Represents a non-epsilon transition from NFA node to NFA node.
+	 * @param end - destination of transition
+	 * @param match - character class to match
+	 */
 	public void addTransition(NFANode end, CharacterClass match) {
 		adj.add(new NFATransition(this, end, match));
 	}
 	
+	/**
+	 * Represents an epsilon transition from NFA node to NFA node.
+	 * @param end - destination of transition
+	 */
 	public void addEpsilonTransition(NFANode end) {
 		adj.add(new NFATransition(this, end));
 	}

@@ -1,44 +1,75 @@
 package Generator.NFA;
 
 import java.util.Map;
+import java.util.TreeMap;
 
 import Generator.Token;
+import Generator.Token.op_code;
 import Generator.Tokenizer;
 import Generator.Character.CharacterClass;
 import Generator.Character.CharacterClassFactory;
-import Generator.Token.op_code;
 
 public class NFAFactory {
-	CharacterClassFactory ccFactory;
+	CharacterClassFactory clsFactory;
+	Map<String, NFA> cache;	// Map of built NFAs.
 	Tokenizer T;
 	
 	public NFAFactory() {
 		T = new Tokenizer("");
-		ccFactory = new CharacterClassFactory(T);
+		clsFactory = new CharacterClassFactory(T);
+		cache = new TreeMap<String, NFA>();
 	}
 	
-	public void charClassFactory(CharacterClassFactory ccf) {
-		ccFactory = ccf;
-		ccFactory.tokenizer = T;
+	public void clsFactory(CharacterClassFactory ccf) {
+		clsFactory = ccf;
+		clsFactory.tokenizer = T;
 	}
 	
 	public void tokenizer(Tokenizer t) {
 		T = t;
-		ccFactory.tokenizer = t;
-	}
-	
-	public NFA build(String in) {
-		T.tokenize(in);
-		NFA nfa = NFA.EpsilonNFA();
-		if(op_code.id == T.peek().operand) {
-			nfa.name = T.peek().value;
-			T.match(op_code.id);
-		}
-		return nfa.and(regex());
+		clsFactory.tokenizer = t;
 	}
 	
 	public void input(String in) {
 		T.tokenize(in);
+	}
+	
+	public Map<String, NFA> cache() {
+		return cache;
+	}
+	
+	/**
+	 * Builds a named NFA from the input specification. 
+	 * 
+	 * It assumes in has the form "$[token-name] [regex]".
+	 * 
+	 * Always returns a NFA, even if the input defines a CharacterClass.
+	 * CharacterClass specifications will be passed to the CharacterClassFactory.
+	 * 
+	 * @param in - regex specification
+	 * @return NFA 
+	 */
+	public NFA build(String in) {
+		T.tokenize(in);
+		NFA nfa = NFA.EpsilonNFA();
+		Token id = T.peek();
+		Token start = T.peek(2);
+		if(start.operand == op_code.left_brac) {
+			// Potential CharacterClass definition.
+			clsFactory.build(in);
+			if(T.match(op_code.eoi)) {
+				// Built CharacterClass successfully.
+				return new NFA( clsFactory.getCharClass(id.value) );
+			}
+		}
+		// Failed to build CharacterClass, must be NFA.
+		T.reset();
+		if(op_code.id == id.operand) {
+			nfa.id = id.value;
+			cache.put(nfa.id, nfa);
+			T.match(op_code.id);
+		}
+		return nfa.and(regex());
 	}
 	
 	public NFA regex() {
@@ -102,18 +133,16 @@ public class NFAFactory {
 		NFA nfa = null;
 		switch (T.peek().operand) {
 		case left_brac :
-			nfa = new NFA( ccFactory.charClass() );
+			nfa = new NFA( clsFactory.charClass() );
 			break;
 		case match_all :
-			//FIXME: Replace with match-all cls
 			CharacterClass cls = new CharacterClass();
 			cls.acceptAll();
 			nfa = new NFA( cls );
 			T.match(op_code.match_all);
 			break;
 		case id :
-			//FIXME: Implement ccMap
-			nfa = new NFA( ccFactory.getCharClass(T.peek().value) );
+			nfa = new NFA( clsFactory.getCharClass(T.peek().value) );
 			T.match(op_code.id);
 			break;
 		case epsilon :
@@ -124,9 +153,5 @@ public class NFAFactory {
 			// Return null to signal no more terminals to match
 		}
 		return nfa;
-	}
-	
-	public CharacterClass buildCharClass() {
-		return null;
 	}
 }

@@ -17,38 +17,32 @@ public class IntegrationTest {
 
 	@Test
 	public void testSpec() {
-		Tokenizer T = new Tokenizer("");
-		CharacterClassFactory ccf = new CharacterClassFactory(T);
-		NFAFactory nf = new NFAFactory();
-		nf.charClassFactory(ccf);
-		nf.tokenizer(T);
-		
+		NFAFactory factory = new NFAFactory();
 		NFASimulator sim = new NFASimulator();
 		
-		
 		String code = "$DIGIT   [0-9]";
-		ccf.build(code);
+		factory.build(code);
 		code = "$ALPHA   [a-zA-Z]";
-		ccf.build(code);
+		factory.build(code);
 		code = "$MULT   [*]";
-		ccf.build(code);
+		factory.build(code);
 		code = "$ADD    [+]";
-		ccf.build(code);
+		factory.build(code);
 		
 		code = "$NUMBER    ($DIGIT)+";
-		NFA digit = nf.build(code);
+		NFA digit = factory.build(code);
 		
 		System.out.println(digit);
 		
 		System.out.println(sim.parse(digit, "1239999"));
 		
 		code = "$IDEN    $ALPHA($ALPHA|$DIGIT)*";
-		NFA iden = nf.build(code);
+		NFA iden = factory.build(code);
 		
 		System.out.println(sim.parse(iden, "ehuang3"));
 		
-		code = "$IDEN    $ALPHA($ALPHA|[^3] IN $DIGIT)*";
-		NFA nfa = nf.build(code);
+		code = "$IDEN    $ALPHA($ALPHA|[^6] IN $DIGIT)*";
+		NFA nfa = factory.build(code);
 		
 		System.out.println(sim.parse(nfa, "ehuang3"));
 	}

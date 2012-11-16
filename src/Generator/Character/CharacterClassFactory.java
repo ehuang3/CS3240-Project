@@ -9,7 +9,7 @@ import Generator.Tokenizer;
 public class CharacterClassFactory 
 {
 	public Tokenizer tokenizer;
-	HashMap<String, CharacterClass> map;
+	public HashMap<String, CharacterClass> map;
 	Token token, peekToken;
 	op_code top, ptop;
 	char start, end;
