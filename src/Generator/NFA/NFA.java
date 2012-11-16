@@ -1,5 +1,8 @@
 package Generator.NFA;
 
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Stack;
 
 import Generator.Character.CharacterClass;
@@ -13,7 +16,7 @@ import Generator.Character.CharacterClass;
  *
  */
 public class NFA {
-	String name;
+	String id;
 	NFANode start;
 	NFANode end;
 	private boolean epsilonNFA;
@@ -24,10 +27,41 @@ public class NFA {
 	private NFA() {
 		start = new NFANode();
 		end = new NFANode();
-		
 		end.terminal(true);
-		
 		epsilonNFA = false;
+	}
+	
+	/**
+	 * Copy constructor
+	 */
+	public NFA(NFA nfa) {
+		HashMap<NFANode, NFANode> map = new HashMap<NFANode, NFANode>();
+		LinkedList<NFANode> Q = new LinkedList<NFANode>();
+		
+		Q.add(nfa.start);
+		map.put(nfa.start, new NFANode(nfa.start));
+		while(!Q.isEmpty()) {
+			NFANode u = Q.poll();
+			List<NFATransition> adj = u.adjacencyList();
+			for(NFATransition t : adj) {
+				NFANode v = t.end;
+				if(!map.containsKey(v)) {
+					map.put(v, new NFANode(v));
+					Q.add(v);
+				}
+				NFANode u_copy = map.get(u);
+				NFANode v_copy = map.get(v);
+				if(t.isEpsilonTransition()) {
+					u_copy.addEpsilonTransition(v_copy);
+				} else {
+					u_copy.addTransition(v_copy, t.match);
+				}
+			}
+		}
+		start = map.get(nfa.start);
+		end = map.get(nfa.end);
+		id = nfa.id;
+		epsilonNFA = nfa.epsilonNFA;
 	}
 	
 	/**

@@ -15,9 +15,11 @@ import Generator.Token.op_code;
 public class Tokenizer {
 	String code;
 	int pos;
-	boolean potentialEpsilon; 	// Alerts the tokenizer of incoming epsilon match
-	boolean regexMode;
+	boolean potentialEpsilon; 	// Alerts of incoming epsilon match
+	boolean regexMode;			// Switches between regex tokens and cls tokens
 	List<String> ids;
+	
+	public boolean debug;
 	
 	static String[] keywords = {
 								 "(", ")", "|", "*", "+", "$", "\\",	// Regex Keywords
@@ -32,6 +34,7 @@ public class Tokenizer {
 		potentialEpsilon = true;
 		regexMode = true;
 		ids = new LinkedList<String>();
+		debug = false;
 	}
 	
 	public int pos() {
@@ -77,18 +80,22 @@ public class Tokenizer {
 		return peek(1);
 	}
 	
-	public void match(op_code op) {
-		match(new Token(op,""));
+	public boolean match(op_code op) {
+		return match(new Token(op,""));
 	}
 	
-	public void match(Token token) {
+	public boolean match(Token token) {
 		if(token.equals(peek())) {
 			Token m = next();
-			System.out.println("Matched token: " + m);
+			if(debug)
+				System.out.println("Matched token: " + m);
+			return true;
 		} else {
-			System.err.println("Failed to match token: Position " + pos + " in " + code + "\n" +
-								"\tExpected: " + token  + "\n" +
-								"\t  Actual: " + peek() + "\n" );
+			if(debug)
+				System.err.println("Failed to match token: Position " + pos + " in " + code + "\n" +
+									"\tExpected: " + token  + "\n" +
+									"\t  Actual: " + peek() + "\n" );
+			return false;
 		}
 	}
 	

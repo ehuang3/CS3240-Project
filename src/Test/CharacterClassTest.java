@@ -1,8 +1,10 @@
-package Generator.Character;
+package Test;
 
 import java.util.ArrayList;
 
 import Generator.Tokenizer;
+import Generator.Character.CharacterClass;
+import Generator.Character.CharacterClassFactory;
 
 public class CharacterClassTest 
 {
