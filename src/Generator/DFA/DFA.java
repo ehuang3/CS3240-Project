@@ -13,8 +13,12 @@ public class DFA {
 		start = new DFANode();
 	}
 	
-	public void name(String n) {
+	public void id(String n) {
 		id = n;
+	}
+	
+	public String id() {
+		return id;
 	}
 
 	public DFANode start() {

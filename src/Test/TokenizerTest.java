@@ -373,6 +373,11 @@ public class TokenizerTest {
 
 	@Test
 	public void testTokenizer() {
-		
+		String regex = "$PRINT PRINT";
+		Tokenizer T = new Tokenizer(regex);
+		T.debug = true;
+		while(T.hasNext()) {
+			T.match(T.peek());
+		}
 	}
 }
