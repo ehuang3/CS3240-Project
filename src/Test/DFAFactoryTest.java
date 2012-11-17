@@ -28,7 +28,7 @@ public class DFAFactoryTest {
 	/**
 	 * Test method for {@link Generator.DFA.DFAFactory#build(Generator.NFA.NFA)}.
 	 */
-	//@Test
+	@Test
 	public void testBuild() {
 		NFAFactory nfafactory = new NFAFactory();
 		NFASimulator nfasim = new NFASimulator();

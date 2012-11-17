@@ -120,6 +120,10 @@ public class NFA {
 		return end;
 	}
 	
+	public String id() {
+		return id;
+	}
+	
 	/**
 	 * Performs the union of NFA B with itself.
 	 * 

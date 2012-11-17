@@ -36,18 +36,18 @@ public class DFAFactory {
 			}
 		}
 		
-		System.out.print("        ");
-		for(int i=numStates-1; i>=1; i--) {
-			System.out.format("%6s ", states.get(i).name);
-		}
-		System.out.println();
-		for(int i=0; i<numStates-1; i++) {
-			System.out.print(states.get(i) + ": ");
-			for(int j=numStates-1; j>=i+1; j--) {
-				System.out.format("%6b ", table[i][j]);
-			}
-			System.out.println();
-		}
+//		System.out.print("        ");
+//		for(int i=numStates-1; i>=1; i--) {
+//			System.out.format("%6s ", states.get(i).name);
+//		}
+//		System.out.println();
+//		for(int i=0; i<numStates-1; i++) {
+//			System.out.print(states.get(i) + ": ");
+//			for(int j=numStates-1; j>=i+1; j--) {
+//				System.out.format("%6b ", table[i][j]);
+//			}
+//			System.out.println();
+//		}
 		
 		boolean min = false;
 		while(!min) {
@@ -90,18 +90,18 @@ public class DFAFactory {
 			}
 		}
 		
-		System.out.print("        ");
-		for(int i=numStates-1; i>=1; i--) {
-			System.out.format("%6s ", states.get(i).name);
-		}
-		System.out.println();
-		for(int i=0; i<numStates-1; i++) {
-			System.out.print(states.get(i) + ": ");
-			for(int j=numStates-1; j>=i+1; j--) {
-				System.out.format("%6b ", table[i][j]);
-			}
-			System.out.println();
-		}
+//		System.out.print("        ");
+//		for(int i=numStates-1; i>=1; i--) {
+//			System.out.format("%6s ", states.get(i).name);
+//		}
+//		System.out.println();
+//		for(int i=0; i<numStates-1; i++) {
+//			System.out.print(states.get(i) + ": ");
+//			for(int j=numStates-1; j>=i+1; j--) {
+//				System.out.format("%6b ", table[i][j]);
+//			}
+//			System.out.println();
+//		}
 		
 		Hashtable<DFAClosure<DFANode>, DFANode> map = new Hashtable<>();
 		ArrayList<DFAClosure<DFANode>> min_states = new ArrayList<>();
@@ -140,20 +140,21 @@ public class DFAFactory {
 					}
 				}
 				if(!V.isEmpty()) {
-					System.out.println(U + " " + input + " --> " + V);
+					//System.out.println(U + " " + input + " --> " + V);
 					map.get(U).appendTransition(map.get(V), input);
 				}
 			}
 		}
 		DFA min_dfa = new DFA();
-		System.out.println(min_states);
-		System.out.println(dfa.start);
+		//System.out.println(min_states);
+		//System.out.println(dfa.start);
 		for(DFAClosure<DFANode> U : min_states) {
 			if(U.contains(dfa.start)) {
 				min_dfa.start = map.get(U);
 				break;
 			}
 		}
+		min_dfa.id = dfa.id;
 		return min_dfa;
 	}
 	
@@ -187,6 +188,7 @@ public class DFAFactory {
 		}
 		DFA dfa = new DFA();
 		dfa.start = table.get(start);
+		dfa.id = nfa.id();
 		return dfa;
 	}
 	
