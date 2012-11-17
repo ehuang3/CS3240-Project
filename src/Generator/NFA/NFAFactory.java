@@ -68,6 +68,8 @@ public class NFAFactory {
 			nfa.id = id.value;
 			cache.put(nfa.id, nfa);
 			T.match(op_code.id);
+			T.resetPast();		// Ignore side-effects of matching id.
+								// i.e. potentialEpsilon is false
 		}
 		return nfa.and(regex());
 	}

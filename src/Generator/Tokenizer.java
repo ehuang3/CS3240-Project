@@ -56,6 +56,11 @@ public class Tokenizer {
 		regexMode = true;
 	}
 	
+	public void resetPast() {
+		potentialEpsilon = true;
+		regexMode = true;
+	}
+	
 	public Token peek(int n) {
 		// Save state
 		int _pos = pos;

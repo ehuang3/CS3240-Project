@@ -71,6 +71,7 @@ public class DFAFactoryTest {
 		
 		//System.out.println(dfa);
 		System.out.println(min_dfa);
+		System.out.println("start " + min_dfa.start);
 	}
 
 }
