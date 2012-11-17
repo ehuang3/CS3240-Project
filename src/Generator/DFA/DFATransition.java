@@ -22,6 +22,10 @@ public class DFATransition {
 		return match.isMatched(c);
 	}
 	
+	public void addMatch(char c) {
+		match.accept(c);
+	}
+	
 	public DFANode start() {
 		return start;
 	}

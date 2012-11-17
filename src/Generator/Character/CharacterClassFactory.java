@@ -28,7 +28,7 @@ public class CharacterClassFactory
 	{
 		tokenizer.tokenize(regex);
 		
-		System.out.println("\tinside build()");
+		//System.out.println("\tinside build()");
 		peekToken = tokenizer.peek();  //consume 1st token (may be a name or [) 
 		CharacterClass temp = new CharacterClass();
 		String s = "";
@@ -101,7 +101,7 @@ public class CharacterClassFactory
 	
 	public CharacterClass basic()  //build [...], already consumed [
 	{
-		System.out.println("\tinside basic()");
+		//System.out.println("\tinside basic()");
 		peekToken = tokenizer.peek();  //check if next token is ^
 		
 		if(peekToken.operand == op_code.exclude)  //[^ exclude
@@ -114,7 +114,7 @@ public class CharacterClassFactory
 	
 	public CharacterClass charList()  //start by consuming 1st cls_char token
 	{
-		System.out.println("\tinside charList()");
+		//System.out.println("\tinside charList()");
 		CharacterClass temp = new CharacterClass();
 		peekToken = tokenizer.peek();  //check if next token is cls_char
 		
@@ -124,14 +124,14 @@ public class CharacterClassFactory
 			if(peekToken.operand == op_code.range)
 			{ 
 				start = token.value.charAt(0);  //set current token as start bound
-				System.out.println("\t\t\t\t\t\t\t\t\tstart: " + start);
+				//System.out.println("\t\t\t\t\t\t\t\t\tstart: " + start);
 				
 				//token = tokenizer.next();  //consume range
 				//token = tokenizer.next();  //consume end
 				consume(2);
 				
 				end = token.value.charAt(0);  //set current token as end bound
-				System.out.println("\t\t\t\t\t\t\t\t\tend: " + end);
+				//System.out.println("\t\t\t\t\t\t\t\t\tend: " + end);
 				
 				temp.acceptBoundary(start, end);  //add range to char class
 			}	
@@ -157,7 +157,7 @@ public class CharacterClassFactory
 		for(int a = 0; a < i; a++)
 		{
 			token = tokenizer.next();
-			System.out.println("\t\t\tconsumed: " + token.value + "\ttype: " + token.operand);
+			//System.out.println("\t\t\tconsumed: " + token.value + "\ttype: " + token.operand);
 		}
 	}
 }

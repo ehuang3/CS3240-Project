@@ -8,11 +8,9 @@ import Generator.DFA.DFATransition;
 public class DFA {
 	String name;
 	public DFANode start;
-	public DFANode end;
 	
 	public DFA() {
 		start = new DFANode();
-		end = new DFANode();
 	}
 	
 	public void name(String n) {
@@ -23,10 +21,6 @@ public class DFA {
 		return start;
 	}
 
-	public DFANode end() {
-		return end;
-	}
-
 	public String toString() {
 		String out = "";
 		
@@ -34,11 +28,11 @@ public class DFA {
 		Q.add(start);
 		while(!Q.isEmpty()) {
 			DFANode u = Q.pop();
-			u.color = 1;
 			out += u + "\n";
 			for(DFATransition e : u.adjacencyList()) {
 				if(e.end.color == 0) {
 					Q.add(e.end);
+					e.end.color = 1;
 				}
 				out += "\t" + e + "\n";
 			}

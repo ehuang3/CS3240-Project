@@ -1,127 +1,72 @@
 package Generator.DFA;
-import Generator.NFA.*;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.Hashtable;
+import java.util.LinkedList;
+import java.util.Queue;
+
+import Generator.NFA.NFA;
+import Generator.NFA.NFANode;
+import Generator.NFA.NFATransition;
 
 public class DFAFactory {
-	NFA nfa;
-		
-	public DFAFactory(NFA generatedNFA)
-	{
-		nfa = generatedNFA;		
-	}
-	public DFA build()
-	{
-		DFA dfa = new DFA();
-		
-		LinkedList<HashSet<Node>> queue = new LinkedList<HashSet<Node>>(); 
-		HashSet<Node> DFAstates = epsilonClosure(nfa.start()); //start node
-		
-		Node dfaNode = new Node(); //map DFAstates to dfaNode
-		Hashtable<HashSet<Node>, Node> mappedDFA = new Hashtable<HashSet<Node>, Node>(); 
-		mappedDFA.put(DFAstates, dfaNode);
-		queue.addLast(DFAstates);
-		
-		while(queue.size() > 0)
-		{
-			HashSet<Node> current = queue.removeFirst();
-			
-			for(char input=32; input<=126; input++){
-				HashSet<Node> destination = new HashSet<Node>();
-				Iterator<Node> itr = current.iterator();
-				Node temp = new Node();
-				List<Transition> adj;
-				while(itr.hasNext())
-				{
-					temp = itr.next();
-					adj = temp.adjacencyList();
-					ListIterator<Transition> listItr = adj.listIterator();
-					Transition trans = new Transition();
-					while(listItr.hasNext())
-					{
-						trans = listItr.next();
-						if(trans.isEpsilonTransition()==false && trans.isTriggered(input))
-						{
-							destination.add(trans.end());				
+	static final char CLS_MIN = ' ';	// 32
+	static final char CLS_MAX = '~';	// 126
+	
+	public DFA build(NFA nfa) {
+		Hashtable<EpsilonClosure<NFANode>, DFANode> table = new Hashtable<>();
+		Queue<EpsilonClosure<NFANode>> Q = new LinkedList<>();
+		EpsilonClosure<NFANode> start = epsilonClosure(nfa.start());
+		table.put(start, new DFANode(start.terminal));
+		Q.add(start);
+		while(!Q.isEmpty()) {
+			EpsilonClosure<NFANode> U = Q.poll();
+			for(char input = CLS_MIN; input <= CLS_MAX; input++) {
+				EpsilonClosure<NFANode> V = new EpsilonClosure<>();
+				for(NFANode n : U) {
+					for(NFATransition t : n.adjacencyList()) {
+						if(!t.isEpsilonTransition() && t.isTriggered(input)) {
+							EpsilonClosure<NFANode> v = epsilonClosure(t.end());
+							V.addAll(v);
+							V.terminal |= v.terminal;
 						}
-							
-					}					
-				}
-				if(destination.size() == 0)
-				{
-					//do nothing
-				}
-				else
-				{
-					itr = destination.iterator();
-					while(itr.hasNext())
-					{
-						temp = itr.next();
-						destination.addAll(epsilonClosure(temp));
 					}
-					destination = ep
 				}
-				
-
-				
+				if(!V.isEmpty()) {
+					if(!table.containsKey(V)) {
+						table.put(V, new DFANode(V.terminal));
+						Q.add(V);
+					}
+					table.get(U).appendTransition(table.get(V), input);
+				}
 			}
-			
-			
 		}
-				
-		
+		DFA dfa = new DFA();
+		dfa.start = table.get(start);
 		return dfa;
 	}
 	
-	
-	//make e-closure(node) which is state of DFA
-	public HashSet<Node> epsilonClosure(Node node) {		
-		return epsilonClosure(node, new HashSet<Node>());		
-	}	
-	private HashSet<Node> epsilonClosure(Node node, HashSet<Node> set)
-	{
-		List<Transition> adj = node.adjacencyList();
-				
-		set.add(node);
-		Iterator<Transition> itr = adj.iterator();
-		Transition temp;
-		while(itr.hasNext())
-		{
-			temp = itr.next();
-			if(temp.isEpsilonTransition())
-			{
-				if(set.add(temp.end())==true) //in case of adding new node, find e-closure 
-				{
-					epsilonClosure(temp.end(), set); //call recursively
+	private EpsilonClosure<NFANode> epsilonClosure(NFANode start) {
+		EpsilonClosure<NFANode> eclosure = new EpsilonClosure<NFANode>();
+		Queue<NFANode> Q = new LinkedList<NFANode>();
+		Q.add(start);
+		eclosure.add(start);
+		while(!Q.isEmpty()) {
+			NFANode u = Q.poll();
+			for(NFATransition t : u.adjacencyList()) {
+				NFANode v = t.end();
+				if(t.isEpsilonTransition() && !eclosure.contains(v)) {
+					eclosure.terminal |= v.isFinal();
+					eclosure.add(v);
+					Q.add(v);
 				}
 			}
 		}
-		return;		
+		return eclosure;
 	}
 	
-	public void getDFAstate(HashSet<Node> setOfNode)
-	{
-		if(hashtable.containsKey(setOfNode) == false)
-		{
-			hashtable.put(setOfNode, setOfNode.hashCode());
-		}
+	@SuppressWarnings("serial")
+	class EpsilonClosure<T> extends HashSet<T> {
+		boolean terminal;
 	}
-	
-	
-	//find available inputs from the e-closure(node)
-	public void findAvailInput(HashSet<Node> state)
-	{
-		List<Transition> adj = node.adjacencyList();
-		Iterator<Transition> itr = adj.iterator();
-		Transition temp;
-		while(itr.hasNext())
-		{
-			temp = itr.next();
-			if(temp.isEpsilonTransition())
-			{
-				state.add(temp.end());
-			}
-		}
-	}
-	
 }
