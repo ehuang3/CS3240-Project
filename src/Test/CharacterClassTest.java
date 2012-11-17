@@ -1,14 +1,28 @@
 package Test;
 
+import static org.junit.Assert.*;
+
 import java.util.ArrayList;
+
+import org.junit.Before;
+import org.junit.Test;
 
 import Generator.Tokenizer;
 import Generator.Character.CharacterClass;
 import Generator.Character.CharacterClassFactory;
+import Generator.NFA.NFAFactory;
+import Generator.NFA.NFASimulator;
 
 public class CharacterClassTest 
 {
-	public static void main(String[] args) 
+	@Before
+	public void setUp() throws Exception 
+	{
+		
+	}
+
+	@Test
+	public void testCharacterClass()
 	{
 		String regex1 = "$NAME [abc]";
 		String regex2 = "[abc]";
@@ -37,16 +51,18 @@ public class CharacterClassTest
 		all.add(regex9);
 		all.add(regex10);
 		
+		Tokenizer t;
+		CharacterClassFactory ccf;
+		CharacterClass cc;
+		
 		for(String s: all)
 		{
-			Tokenizer t = new Tokenizer(s);
-			CharacterClassFactory ccf = new CharacterClassFactory(t);
-			CharacterClass cc = new CharacterClass("$NAME");
+			t = new Tokenizer(s);
+			ccf = new CharacterClassFactory(t);
+			cc = new CharacterClass("$NAME");
 			cc.acceptBoundary('a', 'z');
 			ccf.map.put("$NAME", cc);
 			ccf.build(s).print();
 		}
-
-		System.out.println("\n\n=====================================================================================================");
 	}
 }
