@@ -19,11 +19,12 @@ public class tablewalker {
 	String input;
 	int i, j;
 	List<DFATransition> list;
+	List<DFA> DFAList;
 	ArrayList<String> tokenlist;
 	
 
-	public tablewalker(DFA dfa, String input){
-		this.dfa = dfa;
+	public tablewalker(List<DFA> DFAList, String input){
+		this.DFAList = DFAList;
 		this.input = input;
 	}	
 	
@@ -59,16 +60,21 @@ public class tablewalker {
 				if(transition.isTriggered(current)){
 					now = transition.end();
 					found = true;
+					
 				}
-
-				transition = list.get(++j);
-						
+				else {
+					transition = list.get(++j);
+				}		
 			}
 			
+			/* even though we assumed we get only valid inputs, we just implemented this filter to filter out an invalid token */
 			if(!found && j == size-1){
 				tokenlist.add(token);
 				token = "";
 				valid = false;
+			}
+			else if(found){
+				
 			}
 			
 					
