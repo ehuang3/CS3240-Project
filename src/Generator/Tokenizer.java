@@ -34,7 +34,7 @@ public class Tokenizer {
 		potentialEpsilon = true;
 		regexMode = true;
 		ids = new LinkedList<String>();
-		debug = false;
+		debug = true;
 	}
 	
 	public int pos() {

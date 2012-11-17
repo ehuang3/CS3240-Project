@@ -6,7 +6,7 @@ import Generator.DFA.DFANode;
 import Generator.DFA.DFATransition;
 
 public class DFA {
-	String name;
+	String id;
 	public DFANode start;
 	
 	public DFA() {
@@ -14,7 +14,7 @@ public class DFA {
 	}
 	
 	public void name(String n) {
-		name = n;
+		id = n;
 	}
 
 	public DFANode start() {

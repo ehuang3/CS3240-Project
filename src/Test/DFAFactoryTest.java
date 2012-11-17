@@ -28,7 +28,7 @@ public class DFAFactoryTest {
 	/**
 	 * Test method for {@link Generator.DFA.DFAFactory#build(Generator.NFA.NFA)}.
 	 */
-	@Test
+	//@Test
 	public void testBuild() {
 		NFAFactory nfafactory = new NFAFactory();
 		NFASimulator nfasim = new NFASimulator();
@@ -50,7 +50,27 @@ public class DFAFactoryTest {
 		
 		DFA dfa = dfafactory.build(nfa);
 		
-		System.out.println(dfa);
+		DFA min_dfa = dfafactory.minimize(dfa);
+		
+		//System.out.println(dfa);
+		System.out.println(min_dfa);
+	}
+	
+	@Test
+	public void testEpsilon() {
+		NFAFactory nfafactory = new NFAFactory();
+		NFASimulator nfasim = new NFASimulator();
+		DFAFactory dfafactory = new DFAFactory();
+		
+		String code = "$VAR       |";
+		NFA nfa = nfafactory.build(code);
+		
+		DFA dfa = dfafactory.build(nfa);
+		
+		DFA min_dfa = dfafactory.minimize(dfa);
+		
+		//System.out.println(dfa);
+		System.out.println(min_dfa);
 	}
 
 }
