@@ -34,11 +34,11 @@ public class DFA {
 		Q.add(start);
 		while(!Q.isEmpty()) {
 			DFANode u = Q.pop();
-			u.color = 1;
 			out += u + "\n";
 			for(DFATransition e : u.adjacencyList()) {
 				if(e.end.color == 0) {
 					Q.add(e.end);
+					e.end.color = 1;
 				}
 				out += "\t" + e + "\n";
 			}
