@@ -1,11 +1,19 @@
-%%  Definitions for character classes will be contained in this section – examples below
+%%  Definitions for character classes will be contained in this section ï¿½ examples below
 $DIGIT    		[0-9]
 $NON-ZERO    [^0]  IN  $DIGIT
-$SMALLCASE   	[a-z]
 $LETTER      	[A-Za-z]
-$UPPERCASE  [^a-z] IN $LETTER         
-%%  Token definitions will be contained in this section using regexes – examples below
+$UPPERCASE  [^a-z] IN $LETTER
+$LOWERCASE  [^A-Z] IN $LETTER
+$VOWEL [aeiouAEIOU]
+$CONSONANT [^aeiouAEIOU] IN $VOWEL
+$EVENNUM [02468]
+$ODDNUM [13579]
+
+         
+%%  Token definitions will be contained in this section using regexes ï¿½ examples below
 $IDENTIFIER     	$SMALLCASE ($LETTER | $DIGIT)*
 $CONSTANT            $UPPERCASE ($LETTER | $DIGIT)*
+$FOLLOWEDBYJUNG	($DIGIT|$LETTER)*JUNG
+$TEST	(ab|cd)*ab
 
 
