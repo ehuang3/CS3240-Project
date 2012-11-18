@@ -3,8 +3,13 @@ package Generator;
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Scanner;
 
+import Generator.DFA.DFA;
+import Generator.DFA.DFAFactory;
+import Generator.NFA.NFA;
 import Generator.NFA.NFAFactory;
 
 public class main {
@@ -15,8 +20,8 @@ public class main {
 		String code_fname = null;
 		boolean bonus = false;
 		if(args.length < 2) {
-			spec_fname = "input/sample_input_specification.txt";
-			code_fname = "";
+			spec_fname = "input/sample_spec.txt";
+			code_fname = "input/sample_input.txt";
 			bonus = true;
 		} else if(args.length == 2) {
 			spec_fname = args[0];
@@ -32,31 +37,29 @@ public class main {
 		try {
 			Scanner in = new Scanner(new BufferedReader(new FileReader(spec_fname)));
 			
-			//FIXME: Initialize Factory classes and Tokenizer
-			Tokenizer T = new Tokenizer("");
+			//Initialize Factory classes.
 			NFAFactory RegexGenerator = new NFAFactory();
-			
-			// State switching variables
-			int section = -1;
-			final int CHAR_CLASS_DEF = 0;
-			final int REGEX_DEF = 1;
+			DFAFactory DFAGenerator = new DFAFactory();
 			
 			// Compile the input specification
 			while(in.hasNext()) {
-				String input = in.nextLine();
-				if("%%" == input.substring(0, 2)) {
-					section++;
-				} else if(section == CHAR_CLASS_DEF) {
-					//FIXME: Generate Character Classes
-					
-				} else if(section == REGEX_DEF) {
-					// Generate Regex
-					
+				String input = in.nextLine().trim();
+				if(!input.isEmpty()) {
+					RegexGenerator.build(input);
 				}
 			}
 			in.close();
 			
-			//FIXME: NFA to DFA
+			//NFA to DFA
+			List<DFA> dfas = new LinkedList<DFA>();
+			for(NFA nfa : RegexGenerator.cache().values()) {
+				dfas.add(DFAGenerator.minimize(DFAGenerator.build(nfa)));
+			}
+			
+			for(DFA dfa : dfas) {
+				System.out.println(dfa.id());
+				System.out.println(dfa);
+			}
 			
 			//FIXME: Tokenize input code
 			

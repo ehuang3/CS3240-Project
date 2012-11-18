@@ -1,0 +1,7 @@
+$DIGIT [0-9]
+$UPPER [A-Z]
+$LOWER [a-z]
+$ALPHA [A-Za-z .]
+$SPACE [ ]
+
+$ADDRESS ($DIGIT)+($SPACE)+($ALPHA)+$SPACE($ALPHA)+($SPACE)*,($SPACE)*($UPPER)+
