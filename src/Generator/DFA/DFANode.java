@@ -14,6 +14,11 @@ public class DFANode {
 	int color;
 	String name;
 	
+	public DFANode(boolean term) {
+		this();
+		terminal = term;
+	}
+	
 	public DFANode() {
 		adj = new LinkedList<DFATransition>();
 		terminal = false;
@@ -41,6 +46,18 @@ public class DFANode {
 	
 	public void addTransition(DFANode end, CharacterClass match) {
 		adj.add(new DFATransition(this, end, match));
+	}
+	
+	public void appendTransition(DFANode end, char c) {
+		for(DFATransition t : adj) {
+			if(t.end == end) {
+				t.addMatch(c);
+				return;
+			}
+		}
+		CharacterClass cls = new CharacterClass();
+		cls.accept(c);
+		addTransition(end, cls);
 	}
 	
 	public String toString() {

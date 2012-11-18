@@ -86,16 +86,21 @@ public class CharacterClass
 		return temp;
 	}
 	
-	public void print()
+	public String print()
 	{
 		System.out.println("\n\nprinting character class\n");
+		StringBuilder s = new StringBuilder();
+		
 		for(int a = 0; a < valid.length; a++)
 		{
 			if(valid[a])
 			{
-				System.out.print((char)a + "  ");
+				System.out.print((char)a);
+				s.append((char)a);
 			}
-		}
+		}		
+		System.out.println("\n\n========================================================\n\n");
+		return s.toString();
 	}
 	
 	public String toString() {
