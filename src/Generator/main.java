@@ -27,7 +27,7 @@ public class main {
 		if(args.length < 2) {
 			spec_fname = "input/sample_spec.txt";
 			code_fname = "input/sample_input.txt";
-			bonus = true;
+			bonus = false;
 		} else if(args.length == 2) {
 			spec_fname = args[0];
 			code_fname = args[1];
