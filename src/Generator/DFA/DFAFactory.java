@@ -263,6 +263,7 @@ public class DFAFactory {
 				}				
 			}					
 		}
+		dfa.id = nfa.id();
 		return dfa;
 	}
 	
