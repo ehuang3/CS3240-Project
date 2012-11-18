@@ -15,7 +15,7 @@ public class TableWalkerClass {
 	int size = 0;
 
 	/* We are gonna save each token and the next index of the input String gotten from running each DFAs in these arrays */
-	String[] dfas = new String[size];
+	String[] DFATokenList = new String[size];
 	int[] index = new int[size];
 	int[] block = new int[size];
 	ArrayList<DFANode> currentNode = new ArrayList<DFANode>(size);
@@ -100,18 +100,73 @@ public class TableWalkerClass {
 		return validList;
 	}
 	
+	/**
+	 * This method sets the block array to all ones.
+	 */
+	private void cleanBlockList(){
+		for(int b=0; b<block.length; b++)
+			block[b]=1;
+	}
+	
 	public void walkTable(){
 		
 		for(int i=0; i<input.length(); i++){
+			//upon each char in the input String, we check block list,
+			//if it is empty, then we check the DFATokenList and
+			//get the longest one and add it to the tokenlist
+			//and clean the blocklist and DFATokenList.
+			//if it is all 1s, then we simply walks through all the 
+			//DFA tables and update the CurrentDFANode
+			//and update the DFATokenList
+			//and record the invalid DFAs and update the blocklist.
+			//if it is not entirely open, but it is still open,
+			//then we get the valid list, and walk only those DFAs
+			//in the valid list, and update the CurrentDFANode
+			//and the DFATokenList
+			//and record the invalid DFAs and update the blocklist.
 			
+			if(emptyBlockList()){
+				tokenlist.add(getTheLongest());
+				cleanBlockList();
+				cleanDFATokenList();
+			}
+			else if(fullBlockList()){
+				
+			}
+			else{
+				
+			}
 			
 			
 			
 		}
 		
-		ArrayList validList = getValid();
+	}
+	
+	/**
+	 * This method cleans out the DFATokenList.
+	 */
+	private void cleanDFATokenList(){
+		for(int b=0; b<DFATokenList.length; b++){
+			DFATokenList[b]="";
+		}
+	}
+	
+	/**
+	 * This method goes through the DFATokenList and returns the longest token
+	 * among those gotten from each DFAs.
+	 * @return
+	 */
+	private String getTheLongest(){
 		
+		String longest = DFATokenList[0];
 		
+		for(int b=1; b<DFATokenList.length; b++){
+			if(longest.length() < DFATokenList[b].length())
+				longest = DFATokenList[b];
+		}
+		
+		return longest;
 		
 	}
 }
