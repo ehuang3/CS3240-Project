@@ -72,8 +72,8 @@ public class TableWalkerClass {
 	 * This method empties the tokenList so that we can start rebuilding a new token.
 	 */
 	private void cleanTokenList(){
-		for(int b=0; b<dfas.length; b++)
-			dfas[b] = "";
+		for(int b=0; b<DFATokenList.length; b++)
+			DFATokenList[b] = "";
 	}
 	
 	/**
@@ -108,37 +108,135 @@ public class TableWalkerClass {
 			block[b]=1;
 	}
 	
+	private boolean needFilter(char character){
+		if(character == '\n')
+			return true;
+		else if(character == '\r')
+			return true;
+		else if(character == '\t')
+			return true;
+		else
+			return false;
+	}
+	
+	
 	public void walkTable(){
 		
-		for(int i=0; i<input.length(); i++){
-			//upon each char in the input String, we check block list,
-			//if it is empty, then we check the DFATokenList and
-			//get the longest one and add it to the tokenlist
-			//and clean the blocklist and DFATokenList.
-			//if it is all 1s, then we simply walks through all the 
-			//DFA tables and update the CurrentDFANode
-			//and update the DFATokenList
-			//and record the invalid DFAs and update the blocklist.
-			//if it is not entirely open, but it is still open,
-			//then we get the valid list, and walk only those DFAs
-			//in the valid list, and update the CurrentDFANode
-			//and the DFATokenList
-			//and record the invalid DFAs and update the blocklist.
+		int i=0;
+		while(i<input.length()){
+
 			
+			
+			//to be implemented: filter that skips all the white spaces
+			//except for the whitespace.
+			char current = input.charAt(i);
+			boolean needFiltered = false;
+			
+			do{
+				needFiltered = needFilter(current);
+				if(needFiltered){
+					i++;
+					current = input.charAt(i);
+				}
+			}while(!needFilter(current));
+		
+			
+			//upon each char in the input String, we check block list,			
 			if(emptyBlockList()){
+				//if it is empty, then we check the DFATokenList and
+				//get the longest one and add it to the tokenlist
+				//and clean the blocklist and DFATokenList.
 				tokenlist.add(getTheLongest());
 				cleanBlockList();
 				cleanDFATokenList();
 			}
 			else if(fullBlockList()){
+				//if it is all 1s, then we simply walks through all the 
+				//DFA tables and update the CurrentDFANode
+				//and update the DFATokenList
+				//and record the invalid DFAs and update the blocklist.
+				
+				DFA dfa;
+				DFANode now;
+				List<DFATransition> list;
+				
+				for(int c=0; c<DFAList.size(); c++){
+					dfa = DFAList.get(c);
+					now = dfa.start();
+					list = now.adjacencyList();
+					String token = "";
+					
+					int j=0;
+					boolean found = false;
+					//run while loop for all transitions at the node.
+					while(!found && j<list.size()){
+						
+						DFATransition transition = list.get(j);
+						if(transition.isTriggered(current)){
+							found = true;
+							currentNode.add(c, transition.end());
+							DFATokenList[c] += current;
+							
+						}
+						
+						
+						j++; //increment the index of transitions
+					}
+					
+					if(!found){
+						block[c] = 0;
+						currentNode.remove(c); 
+						//remove the current node info at this particular DFA that doesn't have a match. 
+					}
+					
+				}
 				
 			}
 			else{
+				//if it is not entirely open, but it is still open,
+				//then we get the valid list, and walk only those DFAs
+				//in the valid list, and update the CurrentDFANode
+				//and the DFATokenList
+				//and record the invalid DFAs and update the blocklist.
+				ArrayList validList = getValid();
+				DFA dfa;
+				DFANode now;
+				List<DFATransition> list;
 				
+				for(int c=0; c<validList.size(); c++){
+					
+					int d= (int) validList.get(c); // d is the DFA id.
+					
+					dfa = DFAList.get(d);
+					now = dfa.start();
+					list = now.adjacencyList();
+					String token = "";
+					
+					int j=0;
+					boolean found = false;
+					while(!found && j<list.size()){
+						
+						DFATransition transition = list.get(j);
+						if(transition.isTriggered(current)){
+							found = true;
+							currentNode.add(d, transition.end());
+							DFATokenList[d] += current;
+						}		
+						
+						j++; //increment the index of transitions
+					}
+					
+					if(!found){
+						block[d] = 0;
+						currentNode.remove(d); 
+						//remove the current node info at this particular DFA that doesn't have a match. 
+					}
+
+				}
+	
 			}
-			
-			
-			
+	
+			i++; //increment the index of the String input.
 		}
 		
 	}
