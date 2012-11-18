@@ -11,5 +11,7 @@ import Generator.DFA.DFA;
 import Generator.DFA.DFATransition;
 
 public class TableWalkerTest {
+	
+	
 
 }

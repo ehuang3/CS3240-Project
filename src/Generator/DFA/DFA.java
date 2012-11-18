@@ -6,25 +6,23 @@ import Generator.DFA.DFANode;
 import Generator.DFA.DFATransition;
 
 public class DFA {
-	String name;
+	String id;
 	public DFANode start;
-	public DFANode end;
 	
 	public DFA() {
 		start = new DFANode();
-		end = new DFANode();
 	}
 	
-	public void name(String n) {
-		name = n;
+	public void id(String n) {
+		id = n;
+	}
+	
+	public String id() {
+		return id;
 	}
 
 	public DFANode start() {
 		return start;
-	}
-
-	public DFANode end() {
-		return end;
 	}
 
 	public String toString() {

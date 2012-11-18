@@ -68,6 +68,8 @@ public class NFAFactory {
 			nfa.id = id.value;
 			cache.put(nfa.id, nfa);
 			T.match(op_code.id);
+			T.resetPast();		// Ignore side-effects of matching id.
+								// i.e. potentialEpsilon is false
 		}
 		return nfa.and(regex());
 	}
@@ -117,6 +119,15 @@ public class NFAFactory {
 			cls.accept(T.peek().value.charAt(0));
 			nfa = new NFA(cls);
 			T.match(op_code.re_char);
+			break;
+		case in :	// Catch edge case as in "$PRINT PRINT"
+			CharacterClass cls_I = new CharacterClass();
+			cls_I.accept('I');
+			nfa = new NFA(cls_I);
+			CharacterClass cls_N = new CharacterClass();
+			cls_N.accept('N');
+			nfa.and(new NFA(cls_N));
+			T.match(op_code.in);	// Hack but w/e...
 			break;
 		case left_paren :
 			T.match(op_code.left_paren);
