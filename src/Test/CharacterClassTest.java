@@ -2,16 +2,12 @@ package Test;
 
 import static org.junit.Assert.*;
 
-import java.util.ArrayList;
-
 import org.junit.Before;
 import org.junit.Test;
 
 import Generator.Tokenizer;
 import Generator.Character.CharacterClass;
 import Generator.Character.CharacterClassFactory;
-import Generator.NFA.NFAFactory;
-import Generator.NFA.NFASimulator;
 
 public class CharacterClassTest 
 {

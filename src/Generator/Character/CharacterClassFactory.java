@@ -11,7 +11,6 @@ public class CharacterClassFactory
 	public Tokenizer tokenizer;
 	public HashMap<String, CharacterClass> map;
 	Token token, peekToken;
-	op_code top, ptop;
 	char start, end;
 	
 	public CharacterClassFactory(Tokenizer tokenizer)
