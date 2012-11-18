@@ -1,16 +1,21 @@
 package Generator;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 
 import Generator.DFA.DFA;
 import Generator.DFA.DFAFactory;
 import Generator.NFA.NFA;
 import Generator.NFA.NFAFactory;
+import Generator.NFA.NFASimulator;
+import TableWalker.TableWalker;
+import TableWalker.TableWalker.TokenResult;
 
 public class main {
 	
@@ -22,7 +27,7 @@ public class main {
 		if(args.length < 2) {
 			spec_fname = "input/sample_spec.txt";
 			code_fname = "input/sample_input.txt";
-			bonus = true;
+			bonus = false;
 		} else if(args.length == 2) {
 			spec_fname = args[0];
 			code_fname = args[1];
@@ -56,12 +61,25 @@ public class main {
 				dfas.add(DFAGenerator.minimize(DFAGenerator.build(nfa)));
 			}
 			
-			for(DFA dfa : dfas) {
-				System.out.println(dfa.id());
-				System.out.println(dfa);
-			}
+			in = new Scanner(new File(code_fname));
+			String code = in.useDelimiter("\\Z").next();
+			in.close();
 			
-			//FIXME: Tokenize input code
+			//Tokenize input code
+			TableWalker walker = new TableWalker(dfas);
+			List<TokenResult> results = walker.walk(code);
+			
+			// Results and bonus
+			NFASimulator sim = new NFASimulator();
+			Map<String, NFA> nfas = RegexGenerator.cache();
+			for(TokenResult r : results) {
+				if(bonus) {
+					System.out.println("DFA: " + r + " in " + r.token.length() + " moves.");
+					System.out.println("NFA: " + r.id + " " + sim.parse(nfas.get(r.id), r.token));
+				} else {
+					System.out.println(r);
+				}
+			}
 			
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
