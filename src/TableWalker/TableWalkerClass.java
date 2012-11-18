@@ -108,6 +108,11 @@ public class TableWalkerClass {
 			block[b]=1;
 	}
 	
+	/**
+	 * This method filters out the unnecessary part of the input String
+	 * @param character the current character to be checked if it equls one of the three: \n, \r, and \t.
+	 * @return
+	 */
 	private boolean needFilter(char character){
 		if(character == '\n')
 			return true;
@@ -119,7 +124,9 @@ public class TableWalkerClass {
 			return false;
 	}
 	
-	
+	/**
+	 * This method walks the DFAs.
+	 */
 	public void walkTable(){
 		
 		int i=0;
