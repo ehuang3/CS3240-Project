@@ -17,7 +17,7 @@ import Generator.NFA.NFASimulator;
 import TableWalker.TableWalker;
 import TableWalker.TableWalker.TokenResult;
 
-public class main {
+public class Main {
 	
 	public static void main(String[] args) {
 		// Handle command line arguments

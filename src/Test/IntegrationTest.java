@@ -3,8 +3,6 @@ package Test;
 import org.junit.Before;
 import org.junit.Test;
 
-import Generator.Tokenizer;
-import Generator.Character.CharacterClassFactory;
 import Generator.NFA.NFA;
 import Generator.NFA.NFAFactory;
 import Generator.NFA.NFASimulator;

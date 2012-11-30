@@ -59,6 +59,7 @@ public class DFAFactoryTest {
 	@Test
 	public void testEpsilon() {
 		NFAFactory nfafactory = new NFAFactory();
+		@SuppressWarnings("unused")
 		NFASimulator nfasim = new NFASimulator();
 		DFAFactory dfafactory = new DFAFactory();
 		

@@ -3,13 +3,10 @@ package TableWalker;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 import Generator.DFA.DFA;
 import Generator.DFA.DFANode;
 import Generator.DFA.DFATransition;
-import Generator.NFA.NFA;
-import Generator.NFA.NFASimulator;
 
 
 public class TableWalker {

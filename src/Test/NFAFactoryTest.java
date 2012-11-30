@@ -1,7 +1,6 @@
 package Test;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -9,7 +8,6 @@ import org.junit.Test;
 import Generator.NFA.NFA;
 import Generator.NFA.NFAFactory;
 import Generator.NFA.NFASimulator;
-import Generator.Token.op_code;
 
 public class NFAFactoryTest {
 	NFASimulator NFASim;

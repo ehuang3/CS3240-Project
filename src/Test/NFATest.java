@@ -34,6 +34,7 @@ public class NFATest {
 		//CharacterClass c = a.union(b);
 		
 		NFA n1 = new NFA(a);
+		@SuppressWarnings("unused")
 		NFA n2 = new NFA(b);
 		
 		System.out.println(n1.plus());
