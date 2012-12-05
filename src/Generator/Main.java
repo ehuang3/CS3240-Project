@@ -14,8 +14,8 @@ import Generator.DFA.DFAFactory;
 import Generator.NFA.NFA;
 import Generator.NFA.NFAFactory;
 import Generator.NFA.NFASimulator;
-import TableWalker.TableWalker;
-import TableWalker.TableWalker.TokenResult;
+import Generator.TableWalker.TableWalker;
+import Generator.TableWalker.TableWalker.TokenResult;
 
 public class Main {
 	
@@ -25,8 +25,8 @@ public class Main {
 		String code_fname = null;
 		boolean bonus = false;
 		if(args.length < 2) {
-			spec_fname = "input/sample_spec.txt";
-			code_fname = "input/sample_input.txt";
+			spec_fname = "test/Phase I/sample_spec.txt";
+			code_fname = "test/Phase I/sample_input.txt";
 			bonus = false;
 		} else if(args.length == 2) {
 			spec_fname = args[0];

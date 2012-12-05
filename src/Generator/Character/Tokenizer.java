@@ -1,10 +1,11 @@
-package Generator;
+package Generator.Character;
 
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Scanner;
 
-import Generator.Token.op_code;
+import Generator.Character.Token.op_code;
+
 
 /** 
  * Tokenizes Regex and CharacterClass specifications.

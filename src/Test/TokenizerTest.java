@@ -7,9 +7,9 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 
-import Generator.Token;
-import Generator.Token.op_code;
-import Generator.Tokenizer;
+import Generator.Character.Token;
+import Generator.Character.Tokenizer;
+import Generator.Character.Token.op_code;
 
 public class TokenizerTest {
 

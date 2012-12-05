@@ -5,14 +5,14 @@ import java.util.ArrayList;
 /** 
  * Abstract-Syntax-Tree (AST) holds the tree representation of a parse.
  * 
- * AST recursively defines the tree, the class is both the tree and the nodes
- * in the tree.
+ * AST recursively defines the tree, the class is both the tree and the
+ * nodes in the tree.
  * 
  * @author eric
  */
 public class AST {
 	public final String rule_id;   // Name of grammar rule
-	public final String value;     // Value associated with AST (optional)
+	public final String value;     // Value associated with rule (optional)
 	private ArrayList<AST> child;  // Order list of descendants
 	
 	public AST(String id) {

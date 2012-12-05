@@ -5,9 +5,9 @@ import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
 
-import Generator.Tokenizer;
 import Generator.Character.CharacterClass;
 import Generator.Character.CharacterClassFactory;
+import Generator.Character.Tokenizer;
 
 public class CharacterClassTest 
 {

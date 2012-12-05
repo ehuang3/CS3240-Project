@@ -4,6 +4,7 @@ import java.util.Stack;
 
 import Generator.DFA.DFANode;
 import Generator.DFA.DFATransition;
+import Generator.TableWalker.TableWalker.TokenResult;
 
 public class DFA {
 	String id;
@@ -23,6 +24,31 @@ public class DFA {
 
 	public DFANode start() {
 		return start;
+	}
+	
+	public String walk(String input) {
+		DFANode now = start();
+		boolean transitionMatched = true;
+		int i=0;
+		String lastTerminalMatch = "";
+		String currentMatch = "";
+		while( transitionMatched && (i < input.length()) ) {
+			transitionMatched = false;
+			char c = input.charAt(i);
+			for(DFATransition t : now.adjacencyList()) {
+				if(t.isTriggered(c)) {
+					now = t.end();
+					currentMatch += c;
+					if(t.end().isTerminal()) {
+						lastTerminalMatch = currentMatch;
+					}
+					i++;
+					transitionMatched = true;
+					break;
+				}
+			}
+		}
+		return lastTerminalMatch;
 	}
 
 	public String toString() {

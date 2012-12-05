@@ -3,11 +3,11 @@ package Generator.NFA;
 import java.util.Map;
 import java.util.TreeMap;
 
-import Generator.Token;
-import Generator.Token.op_code;
-import Generator.Tokenizer;
 import Generator.Character.CharacterClass;
 import Generator.Character.CharacterClassFactory;
+import Generator.Character.Token;
+import Generator.Character.Tokenizer;
+import Generator.Character.Token.op_code;
 
 public class NFAFactory {
 	CharacterClassFactory clsFactory;

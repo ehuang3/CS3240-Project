@@ -1,4 +1,4 @@
-package Generator;
+package Generator.Character;
 
 public class Token {
 	public enum op_code {

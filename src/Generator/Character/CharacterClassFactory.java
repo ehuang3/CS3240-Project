@@ -2,9 +2,7 @@ package Generator.Character;
 
 import java.util.HashMap;
 
-import Generator.Token;
-import Generator.Token.op_code;
-import Generator.Tokenizer;
+import Generator.Character.Token.op_code;
 
 public class CharacterClassFactory 
 {
