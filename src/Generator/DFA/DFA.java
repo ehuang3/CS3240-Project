@@ -2,10 +2,6 @@ package Generator.DFA;
 
 import java.util.Stack;
 
-import Generator.DFA.DFANode;
-import Generator.DFA.DFATransition;
-import Generator.TableWalker.TableWalker.TokenResult;
-
 public class DFA {
 	String id;
 	public DFANode start;
