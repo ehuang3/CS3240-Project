@@ -1,0 +1,23 @@
+begin
+strStartWithUpper = find ' [A-Z]([a-zA-Z]|[0-9])*(\.|\,)+' in "myInput.txt";
+n_strStartWithUpper = #strStartWithUpper;
+print(strStartWithUpper);
+print(n_strStartWithUpper);
+
+strStartWithLower = find ' [a-z]([a-zA-Z]|[0-9])*(\.|\,)+' in "myInput.txt";
+print(strStartWithLower);
+
+unionUpperLower = strStartWithUpper union strStartWithLower;
+print(unionUpperLower);
+
+usingDiffGetUpper = unionUpperLower diff strStartWithLower;
+print(usingDiffGetUpper);
+
+usingIntersGetLower = unionUpperLower inters strStartWithLower;
+print(usingIntersGetLower);
+
+maxFreqWithUpper = maxfreqstring(strStartWithUpper);
+print(maxFreqWithUpper);
+replace '[0-9]+' with "XXXXXX" in "myInput.txt" >! "myOutputReplace.txt";
+recursivereplace '(Chr|istmas)' with "YYY" in "myInput.txt" >! "myOutputRecursiveReplace.txt";
+end
