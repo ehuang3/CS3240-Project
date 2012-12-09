@@ -1,0 +1,10 @@
+begin
+replace 'Alice' with "Roxanne" in "test/phase-ii/alice/chap1.txt" >! "test/phase-ii/alice/chap1-Roxanne.txt";
+replace '([a-zA-Z])+' with "" in "test/phase-ii/alice/chap2.txt" >! "test/phase-ii/alice/chap2-empty.txt";
+replace 'Roxanne' with "Alice" in "test/phase-ii/alice/chap1-Roxanne.txt" >! "test/phase-ii/alice/chap1-Alice.txt";
+recursivereplace '(a|b|Alice|rabbit|the| )' with "" in "test/phase-ii/alice/chap3.txt" >! "test/phase-ii/alice/chap3-RR.txt";
+n_alice = find 'Alice' in "test/phase-ii/alice/chap4.txt";
+print(n_alice);
+max_str1 = find '([a-z])+' in "test/phase-ii/alice/chap4.txt";
+max_str1 = #max_str1;
+end
