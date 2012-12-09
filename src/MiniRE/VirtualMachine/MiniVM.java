@@ -80,7 +80,34 @@ public class MiniVM {
 		case "MAXFREQ" :
 			// TODO
 			break;
+		case "PRINT" :
+			// TODO
+			break;
 		}
+		
+		return null;
+	}
+	
+	public String[] file_names(AST ast) {
+		match("file-names", ast);
+		
+		//TODO
+		
+		return null;
+	}
+	
+	public String source_file(AST ast) {
+		match("source-file", ast);
+		
+		//TODO
+		
+		return null;
+	}
+	
+	public String destination_file(AST ast) {
+		match("destination-file", ast);
+		
+		//TODO
 		
 		return null;
 	}
