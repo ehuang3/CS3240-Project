@@ -1,23 +1,23 @@
 begin
-strStartWithUpper = find ' [A-Z]([a-zA-Z]|[0-9])*(\.|\,)+' in "myInput.txt";
-n_strStartWithUpper = #strStartWithUpper;
-print(strStartWithUpper);
-print(n_strStartWithUpper);
+upper = find ' [A-Z]([a-zA-Z]|[0-9])*(\.|\,)+' in "myInput.txt";
+n_upper = #upper;
+print(upper);
+print(n_upper);
 
-strStartWithLower = find ' [a-z]([a-zA-Z]|[0-9])*(\.|\,)+' in "myInput.txt";
-print(strStartWithLower);
+lower = find ' [a-z]([a-zA-Z]|[0-9])*(\.|\,)+' in "myInput.txt";
+print(lower);
 
-unionUpperLower = strStartWithUpper union strStartWithLower;
-print(unionUpperLower);
+upUlow = upper union lower;
+print(upUlow);
 
-usingDiffGetUpper = unionUpperLower diff strStartWithLower;
-print(usingDiffGetUpper);
+upper2 = upUlow diff lower;
+print(upper2);
 
-usingIntersGetLower = unionUpperLower inters strStartWithLower;
-print(usingIntersGetLower);
+lower2 = upUlow inters lower;
+print(lower2);
 
-maxFreqWithUpper = maxfreqstring(strStartWithUpper);
-print(maxFreqWithUpper);
+maxUp = maxfreqstring(upper);
+print(maxUp);
 replace '[0-9]+' with "XXXXXX" in "myInput.txt" >! "myOutputReplace.txt";
 recursivereplace '(Chr|istmas)' with "YYY" in "myInput.txt" >! "myOutputRecursiveReplace.txt";
 end

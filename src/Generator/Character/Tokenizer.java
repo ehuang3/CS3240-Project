@@ -1,8 +1,9 @@
 package Generator.Character;
 
-import java.util.LinkedList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Scanner;
+import java.util.Set;
 
 import Generator.Character.Token.op_code;
 
@@ -18,7 +19,7 @@ public class Tokenizer {
 	int pos;
 	boolean potentialEpsilon; 	// Alerts of incoming epsilon match
 	boolean regexMode;			// Switches between regex tokens and cls tokens
-	List<String> ids;
+	Set<String> ids;
 	
 	public boolean debug;
 	
@@ -34,7 +35,7 @@ public class Tokenizer {
 		pos = 0;
 		potentialEpsilon = true;
 		regexMode = true;
-		ids = new LinkedList<String>();
+		ids = new HashSet<String>();
 		debug = false;
 	}
 	
@@ -42,12 +43,12 @@ public class Tokenizer {
 		return pos;
 	}
 	
-	public List<String> ids() {
+	public Set<String> ids() {
 		return ids;
 	}
 	
 	public void tokenize(String in) {
-		code = in;
+		code = in.trim();
 		reset();
 	}
 	
@@ -311,21 +312,31 @@ public class Tokenizer {
 	}
 	
 	private String findId() {
-		// Find existing match
-		String id = "";
+		// Case 1: ID is at beginning of code
+		if(pos == 0) {
+			// Match ID until first whitespace
+			Scanner S = new Scanner(code);
+			String ID = S.next();
+			ids.add(ID);  // Add new ID to set
+			S.close();
+			return ID;
+		}
+		// Case 2: ID exists and is in regex definition
+		// Find longest existing match
+		String ID = "";
 		for(String i : ids) {
 			int match = code.indexOf(i, pos);
-			if(match == pos) {
-				id = i;
+			if(match == pos && ID.length() < i.length()) {
+				ID = i;
 			}
 		}
-		// Create new identifier greedily
-		if(id.isEmpty()) {
+		// Case 3: ID does not exist and is in regex definition
+		if(ID.isEmpty()) {
+			// Match ID until first whitespace
 			Scanner S = new Scanner(code.substring(pos));
-			id = S.next();
+			ID = S.next();
+			ids.add(ID);  // Add new ID to set
 			S.close();
-			// Add to list of ids
-			ids.add(id);
 		}
 		
 		//FIXME: Handle ids with overlapping names.
@@ -334,7 +345,7 @@ public class Tokenizer {
 		// 		 $ID, $ID1, and $ID2
 		// 		 regex = $ID1234$ID234
 		
-		return id;
+		return ID;
 	}
 	
 	private String nextKeyword() {

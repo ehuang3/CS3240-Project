@@ -2,6 +2,8 @@ package Generator.Lexer;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Scanner;
@@ -14,6 +16,7 @@ import Generator.NFA.NFAFactory;
 
 public class Lexer {
 	private Map<String, DFA> tokenDFA;  // Map of token-id's to DFA's
+	private List<String> tokenOrder;	// Prioritized list of token-id's
 	private String spec;  // Token specification
 	private String code;  // Input code to tokenize
 	private String skip;  // Characters to skip, defaults to {space, tab, newline, carriage-return}
@@ -33,8 +36,9 @@ public class Lexer {
 	 * @param lexicalSpec
 	 */
 	public Lexer(String lexicalSpec) {
-		spec = lexicalSpec;
 		tokenDFA = new TreeMap<String, DFA>();
+		tokenOrder = new ArrayList<String>();
+		spec = lexicalSpec;
 		skip = " \n\t\r";
 		code = "";
 		init();
@@ -97,15 +101,19 @@ public class Lexer {
 	private void init() {
 		if(spec == null || spec.isEmpty()) {
 			tokenDFA.clear();
+			tokenOrder.clear();
 			return;
 		}
 		// Build token NFAs
 		NFAFactory nfaFactory = new NFAFactory();
 		Scanner in = new Scanner(spec);
+		// No duplicates
+		tokenOrder.clear();
 		while(in.hasNext()) {
 			String line = in.nextLine().trim();
 			if(!line.isEmpty()) {
-				nfaFactory.build(line);
+				NFA nfa = nfaFactory.build(line);
+				tokenOrder.add(nfa.id());
 			}
 		}
 		in.close();
@@ -195,19 +203,36 @@ public class Lexer {
 		return peek(1);
 	}
 	
+	public Token peek(String token_id) {
+		int saved_pos = pos;
+		Token token = next(token_id);
+		pos = saved_pos;
+		
+		return token;
+	}
+	
+	public Token peek(String[] ids) {
+		int saved_pos = pos;
+		Token token = next(ids, false);
+		pos = saved_pos;
+		
+		return token;
+	}
+	
 	/**
 	 * Attempts to consume a token of type tokenID.
 	 * 
 	 * Reports an error if the next token is not of type tokenID.
 	 * 
 	 * @param tokenID
-	 * @return true if successful match
+	 * @return matched token or error token
 	 */
 	public boolean match(String tokenID) {
-		if(tokenID.equals(peek().token_id)) {
-			Token m = next();
+		if(tokenID.equals(peek().token_id) &&
+				peek().start_pos == pos) {
+			Token match = next();
 			if(verbose)
-				System.out.println("Matched token: " + m);
+				System.out.println("Matched token: " + match);
 			return true;
 		} else {
 			Scanner s = new Scanner(code);
@@ -242,8 +267,9 @@ public class Lexer {
 			"\tExpected: " + tokenID + "\n" +
 			"\tActual:   " + peek() + "\n"
 			);
+			
+			return false;
 		}
-		return false;
 	}
 	
 	/**
@@ -275,7 +301,7 @@ public class Lexer {
 	 * @return matched token, epsilon or eoi
 	 */
 	public Token next(boolean skipNonMatchable) {
-		return next(tokenDFA.keySet().toArray(new String[] {}), skipNonMatchable);
+		return next(tokenOrder.toArray(new String[]{}), skipNonMatchable);
 	}
 	
 	/**
@@ -321,6 +347,9 @@ public class Lexer {
 		
 		skip();  // Pre-skip white space
 		for(String tokenID : ids) {
+			if(tokenID == null) {  // List.toArray can contain null elements
+				continue;
+			}
 			DFA dfa = tokenDFA.get(tokenID);
 			// Find the next instance of tokenID
 			int i = pos;
@@ -330,6 +359,7 @@ public class Lexer {
 						i <= token.start_pos) {
 					token = new Token(dfa.id(), value, i);
 					break;  // Exit on first successful match
+							// Order of ids matters
 				}
 				i++;
 			// Loop only if we skip over invalid matches

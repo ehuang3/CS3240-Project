@@ -2,6 +2,8 @@ package MiniRE;
 
 import java.util.ArrayList;
 
+import Generator.Lexer.Token;
+
 /** 
  * Abstract-Syntax-Tree (AST) holds the tree representation of a parse.
  * 
@@ -23,6 +25,10 @@ public class AST {
 		rule_id = id;
 		value = val;
 		child = new ArrayList<AST>();
+	}
+	
+	public AST(Token token) {
+		this(token.token_id, token.value);
 	}
 	
 	public void add(AST ast) {

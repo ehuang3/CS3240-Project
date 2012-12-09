@@ -2,14 +2,14 @@ package Test;
 
 import static org.junit.Assert.assertEquals;
 
-import java.util.List;
+import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
 
 import Generator.Character.Token;
-import Generator.Character.Tokenizer;
 import Generator.Character.Token.op_code;
+import Generator.Character.Tokenizer;
 
 public class TokenizerTest {
 
@@ -144,9 +144,9 @@ public class TokenizerTest {
 		assertEquals(op_code.eoi, token.operand);
 		assertEquals("", token.value);
 		
-		List<String> ids = T.ids();
-		assertEquals("$DIGIT", ids.get(0));
-		assertEquals("$NON-ZERO", ids.get(1));
+		Set<String> ids = T.ids();
+		assertEquals(true, ids.contains("$DIGIT"));
+		assertEquals(true, ids.contains("$NON-ZERO"));
 	}
 	
 	@Test
