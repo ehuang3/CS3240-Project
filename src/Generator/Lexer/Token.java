@@ -22,7 +22,8 @@ public class Token {
 	}
 	
 	public String toString() {
-		return token_id + ": " + value + 
+		String val = token_id.equals("epsilon") ? "ε" : value;
+		return token_id + ": " + val + 
 			   " (start: " + start_pos + ", end: " + end_pos + ")";
 	}
 }

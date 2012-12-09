@@ -48,7 +48,7 @@ public class DFA {
 	}
 
 	public String toString() {
-		String out = "";
+		String out = id + "\n";
 		
 		Stack<DFANode> Q = new Stack<DFANode>();
 		Q.add(start);

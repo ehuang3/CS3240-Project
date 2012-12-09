@@ -65,7 +65,7 @@ public class NFAFactory {
 		// Failed to build CharacterClass, must be NFA.
 		T.reset();
 		if(op_code.id == id.operand) {
-			nfa.id = id.value;
+			nfa.id = id.value.substring(1);
 			cache.put(nfa.id, nfa);
 			T.match(op_code.id);
 			T.resetPast();		// Ignore side-effects of matching id.
