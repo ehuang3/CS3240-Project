@@ -10,16 +10,22 @@ import MiniRE.AST;
 
 public class MiniParser {
 	public Lexer lexer;
+	private boolean valid;
 	
 	public MiniParser() {
 		lexer = new Lexer();
 		lexer.fspec("test/sample/token_spec.txt");
 	}
 	
+	public boolean valid() {
+		return valid;
+	}
+	
 	private AST match(String token_id) {
 		AST ast = new AST(lexer.peek(token_id));
 		if(!lexer.match(token_id)) {
 			ast = new AST("error-token");
+			valid = false;
 		}
 		return ast;
 	}
@@ -39,7 +45,9 @@ public class MiniParser {
 	
 	public AST parse(String input) {
 		lexer.tokenize(input);
-		return MiniRE_program();
+		valid = true;
+		AST ast = MiniRE_program();
+		return valid ? ast : null;
 	}
 	
 	public AST MiniRE_program() {
