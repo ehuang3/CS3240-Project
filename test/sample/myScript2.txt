@@ -1,0 +1,24 @@
+/**
+checking multiple grammars in MiniRE
+**/
+
+begin
+sqrBrkN = find '\[[0-9]+\]' in "myInput.txt";
+n_sqrBrkN = #sqrBrkN;
+number = find '([0-9])+' in "myInput.txt";
+upper = find ' [A-Z]([a-zA-Z]|[0-9])*(\.|\,)+' in "myInput.txt";
+lower = find ' [a-z]([a-zA-Z]|[0-9])*(\.|\,)+' in "myInput.txt";
+upUlow = find ' [A-Z]([a-zA-Z]|[0-9])*(\.|\,)+' in "myInput.txt" union find ' [a-z]([a-zA-Z]|[0-9])*(\.|\,)+' in "myInput.txt";
+ParupUlow = ( find ' [A-Z]([a-zA-Z]|[0-9])*(\.|\,)+' in "myInput.txt" union find ' [a-z]([a-zA-Z]|[0-9])*(\.|\,)+' in "myInput.txt" );
+
+print(sqrBrkN);
+print( (find '\[[0-9]+\]' in "myInput.txt") );
+print(n_sqrBrkN);
+print(number);
+print(sqrBrkN, number);
+
+print(number);
+number = sqrBrkN;
+print(number);
+
+end

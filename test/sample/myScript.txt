@@ -1,3 +1,7 @@
+/**
+Checking that every function of MiniRE briefly works correctly or not 
+**/
+
 begin
 upper = find ' [A-Z]([a-zA-Z]|[0-9])*(\.|\,)+' in "myInput.txt";
 n_upper = #upper;
@@ -7,13 +11,13 @@ print(n_upper);
 lower = find ' [a-z]([a-zA-Z]|[0-9])*(\.|\,)+' in "myInput.txt";
 print(lower);
 
-upUlow = upper union lower;
+upUlow = find ' [A-Z]([a-zA-Z]|[0-9])*(\.|\,)+' in "myInput.txt" union find ' [a-z]([a-zA-Z]|[0-9])*(\.|\,)+' in "myInput.txt";
 print(upUlow);
 
-upper2 = upUlow diff lower;
+upper2 = find ' [A-Z]([a-zA-Z]|[0-9])*(\.|\,)+' in "myInput.txt" union find ' [a-z]([a-zA-Z]|[0-9])*(\.|\,)+' in "myInput.txt" diff find ' [a-z]([a-zA-Z]|[0-9])*(\.|\,)+' in "myInput.txt";
 print(upper2);
 
-lower2 = upUlow inters lower;
+lower2 = find ' [A-Z]([a-zA-Z]|[0-9])*(\.|\,)+' in "myInput.txt" union find ' [a-z]([a-zA-Z]|[0-9])*(\.|\,)+' in "myInput.txt" inters find ' [a-z]([a-zA-Z]|[0-9])*(\.|\,)+' in "myInput.txt";
 print(lower2);
 
 maxUp = maxfreqstring(upper);
