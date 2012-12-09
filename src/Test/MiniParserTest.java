@@ -5,6 +5,7 @@ import static org.junit.Assert.fail;
 import org.junit.Before;
 import org.junit.Test;
 
+import MiniRE.AST;
 import MiniRE.RecursiveDescent.MiniParser;
 
 public class MiniParserTest {
@@ -19,7 +20,16 @@ public class MiniParserTest {
 		
 		System.out.println(mini.lexer);
 		
-		mini.parseFile("test/sample/myScript.txt");
+		AST ast;
+		ast = mini.parseFile("test/sample/script.txt");
+		System.out.println("===============================");
+		mini.parseFile("test/phase-ii/debug/ascii_test.txt");
+		System.out.println("===============================");
+		mini.parseFile("test/phase-ii/debug/regex_test.txt");
+		System.out.println("===============================");
+		mini.parseFile("test/phase-ii/debug/fail/empty_program.txt");
+		
+		System.out.println(ast);
 	}
 
 	@Test

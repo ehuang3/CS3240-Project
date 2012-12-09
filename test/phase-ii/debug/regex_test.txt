@@ -1,0 +1,6 @@
+begin
+a = find '[0-9]' in "f1.txt";
+a = find '\'' in "f1.txt";
+a = find '\'\' in "f1.txt";
+a = find '[\']' in "f1.txt";
+end

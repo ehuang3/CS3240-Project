@@ -1,0 +1,5 @@
+begin
+replace 'a' with "HELLO WORLD" in "f1.txt" >! "f2.txt";
+replace 'b' with "\"HELLO\"" in "f1.txt" >! "f2.txt";
+replace 'c' with "\"\\a" in "f1.txt" >! "f2.txt";
+end

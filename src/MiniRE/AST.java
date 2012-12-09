@@ -46,4 +46,19 @@ public class AST {
 	public boolean terminal() {
 		return child.size() == 0;
 	}
+	
+	public String toString() {
+		String out = rule_id + ": " + value;
+		if(!terminal()) {
+			out += " child: {";
+			out += child.get(0);
+			if(child.size() > 1) {
+				for(int i = 1; i < child.size(); i++) {
+					out += ", " + child.get(i);
+				}
+			}
+			out += "}";
+		}
+		return out;
+	}
 }
