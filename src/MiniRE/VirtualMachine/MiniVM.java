@@ -39,5 +39,49 @@ public class MiniVM {
 	
 	public void statement_list_tail(AST ast) throws Exception {
 		match("statement-list-tail", ast);
+		
+		switch (ast.get(0).rule_id) {
+		case "statement" :
+			statement(ast.get(0));
+			statement_list_tail(ast.get(1));
+			break;
+		case "epsilon" :
+			match("epsilon", ast.get(0));
+			break;
+		}
+	}
+	
+	public void statement(AST ast) throws Exception {
+		match("statement", ast);
+		
+		switch (ast.get(0).rule_id) {
+		case "REPLACE" :
+			// TODO
+			break;
+		case "RECREP" :
+			// TODO
+			break;
+		case "ID" :
+			// TODO
+			break;
+		}
+	}
+	
+	public Variable statement_righthand(AST ast) {
+		match("statement-righthand", ast);
+		
+		switch (ast.get(0).rule_id) {
+		case "exp" :
+			// TODO
+			break;
+		case "HASH" :
+			// TODO
+			break;
+		case "MAXFREQ" :
+			// TODO
+			break;
+		}
+		
+		return null;
 	}
 }
