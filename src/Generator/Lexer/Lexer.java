@@ -189,11 +189,13 @@ public class Lexer {
 	 */
 	public Token peek(int n) {
 		int saved_pos = pos;
+		int saved_line = line_num;
 		for(int i = 1; i < n; i++) {
 			next();
 		}
 		Token token = next();
 		pos = saved_pos;
+		line_num = saved_line;
 		
 		return token;
 	}
@@ -209,8 +211,10 @@ public class Lexer {
 	
 	public Token peek(String token_id) {
 		int saved_pos = pos;
+		int saved_line = line_num;
 		Token token = next(token_id);
 		pos = saved_pos;
+		line_num = saved_line;
 		
 		return token;
 	}
@@ -358,6 +362,7 @@ public class Lexer {
 		}
 		
 		skip();  // Pre-skip white space
+		int saved_line = line_num;
 		for(String tokenID : ids) {
 			if(tokenID == null) {  // List.toArray can contain null elements
 				continue;
@@ -365,13 +370,18 @@ public class Lexer {
 			DFA dfa = tokenDFA.get(tokenID);
 			// Find the next instance of tokenID
 			int i = pos;
+			int curr_line = saved_line;
 			do {
 				String value = dfa.walk(code.substring(i));
 				if(token.value.length() < value.length() &&
 						i <= token.start_pos) {
-					token = new Token(dfa.id(), value, line_num, i);
+					token = new Token(dfa.id(), value, curr_line, i);
+					line_num = curr_line;  // Update line_num with best match
 					break;  // Exit on first successful match
 							// Order of ids matters
+				}
+				if(code.substring(i, i+1).equals("\n")) {
+					curr_line++;
 				}
 				i++;
 			// Loop only if we skip over invalid matches
@@ -393,7 +403,7 @@ public class Lexer {
 	private void skip() {
 		while(pos < code.length() &&
 				skip.contains(code.substring(pos, pos+1))) {
-			if(code.charAt(pos) == '\n') {
+			if(code.substring(pos, pos+1).equals("\n")) {
 				line_num++;
 			}
 			pos++;
