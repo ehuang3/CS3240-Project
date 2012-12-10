@@ -22,7 +22,9 @@ public class CharacterClass
 
 	public boolean isMatched(char c) 
 	{
-		return valid[(int)c];
+		if((int) c >= 0 && (int) c < 256)
+			return valid[(int)c];
+		return false;
 	}
 	
 	public void accept(char c)

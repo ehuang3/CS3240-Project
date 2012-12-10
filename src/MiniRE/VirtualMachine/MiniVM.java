@@ -21,7 +21,7 @@ public class MiniVM {
 	
 	public MiniVM() {
 		symbol_table = new TreeMap<>();
-		debug = false;
+		debug = true;
 	}
 	
 	public void match(String rule_id, AST ast) throws Exception {
@@ -31,7 +31,7 @@ public class MiniVM {
 			throw new Exception();
 		} else {
 			if(debug)
-				System.out.println("MiniVM matched: " + rule_id);
+				System.out.println("MiniVM matched: " + rule_id + " as " + ast);
 		}
 	}
 	

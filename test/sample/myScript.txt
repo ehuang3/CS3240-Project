@@ -1,4 +1,3 @@
-
 begin
 upper = find ' [A-Z]([a-zA-Z]|[0-9])*(\.|\,)+' in "test/sample/myInput.txt";
 n_upper = #upper;
@@ -11,10 +10,10 @@ print(lower);
 upUlow = find ' [A-Z]([a-zA-Z]|[0-9])*(\.|\,)+' in "test/sample/myInput.txt" union find ' [a-z]([a-zA-Z]|[0-9])*(\.|\,)+' in "test/sample/myInput.txt";
 print(upUlow);
 
-upper2 = find ' [A-Z]([a-zA-Z]|[0-9])*(\.|\,)+' in "test/sample/myInput.txt" union find ' [a-z]([a-zA-Z]|[0-9])*(\.|\,)+' in "myInput.txt" diff find ' [a-z]([a-zA-Z]|[0-9])*(\.|\,)+' in "test/sample/myInput.txt";
+upper2 = find ' [A-Z]([a-zA-Z]|[0-9])*(\.|\,)+' in "test/sample/myInput.txt" union find ' [a-z]([a-zA-Z]|[0-9])*(\.|\,)+' in "test/sample/myInput.txt" diff find ' [a-z]([a-zA-Z]|[0-9])*(\.|\,)+' in "test/sample/myInput.txt";
 print(upper2);
 
-lower2 = find ' [A-Z]([a-zA-Z]|[0-9])*(\.|\,)+' in "test/sample/myInput.txt" union find ' [a-z]([a-zA-Z]|[0-9])*(\.|\,)+' in "myInput.txt" inters find ' [a-z]([a-zA-Z]|[0-9])*(\.|\,)+' in "test/sample/myInput.txt";
+lower2 = find ' [A-Z]([a-zA-Z]|[0-9])*(\.|\,)+' in "test/sample/myInput.txt" union find ' [a-z]([a-zA-Z]|[0-9])*(\.|\,)+' in "test/sample/myInput.txt" inters find ' [a-z]([a-zA-Z]|[0-9])*(\.|\,)+' in "test/sample/myInput.txt";
 print(lower2);
 
 maxUp = maxfreqstring(upper);

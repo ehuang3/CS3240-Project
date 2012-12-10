@@ -1,4 +1,3 @@
-
 begin
 sqrBrkN = find '\[[0-9]+\]' in "test/sample/myInput.txt";
 n_sqrBrkN = #sqrBrkN;
@@ -9,7 +8,7 @@ upUlow = find ' [A-Z]([a-zA-Z]|[0-9])*(\.|\,)+' in "test/sample/myInput.txt" uni
 ParupUlow = ( find ' [A-Z]([a-zA-Z]|[0-9])*(\.|\,)+' in "test/sample/myInput.txt" union find ' [a-z]([a-zA-Z]|[0-9])*(\.|\,)+' in "test/sample/myInput.txt" );
 
 print(sqrBrkN);
-print( (find '\[[0-9]+\]' in "test/sample/myInput.txt") );
+print( find '\[[0-9]+\]' in "test/sample/myInput.txt" );
 print(n_sqrBrkN);
 print(number);
 print(sqrBrkN, number);
