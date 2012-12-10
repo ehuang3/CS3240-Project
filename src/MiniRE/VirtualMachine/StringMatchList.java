@@ -117,12 +117,12 @@ public class StringMatchList {
 			int i = 0;
 			for(StringMatch match : list) {
 				if(i == 0) {
-					out += match.value + " ";
+					out += "\"" + match.value + "\" ";
 					for(StringMatchInfo info : match.info) {
 						out += info;
 					}
 				} else {
-					out += ", " + match.value + " ";
+					out += ", \"" + match.value + "\" ";
 					for(StringMatchInfo info : match.info) {
 						out += info;
 					}

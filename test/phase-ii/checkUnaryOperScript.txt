@@ -1,0 +1,8 @@
+begin
+upper = find ' [A-Z]([a-zA-Z]|[0-9])*(\.|\,)+' in "test/phase-ii/checkUnaryOperInput.txt";
+n_upper = #upper;
+print(n_upper);
+maxfreq = maxfreqstring(upper);
+print(n_upper, maxfreq);
+print(upper);
+end

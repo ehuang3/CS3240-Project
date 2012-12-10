@@ -26,7 +26,10 @@ public class MiniVM {
 	
 	public void match(String rule_id, AST ast) throws Exception {
 		if(ast == null || !rule_id.equals(ast.rule_id)) {
+			System.out.println("MiniVM failed: " + rule_id + " was " + ast.rule_id);
 			throw new Exception();
+		} else {
+			System.out.println("MiniVM matched: " + rule_id);
 		}
 	}
 	
@@ -75,7 +78,7 @@ public class MiniVM {
 			recursivereplace(ast);
 			break;
 		case "ID" :
-			id(ast);
+			assign_expr(ast);
 			break;
 		case "PRINT" :
 			print(ast);
@@ -129,7 +132,7 @@ public class MiniVM {
 		while(count != 0) {
 			count = 0;
 			
-			while(!lexer.peek().token_id.equals("eoi")){
+			while(lexer.hasNext("REGEX")){
 				
 				Token token = lexer.next("REGEX");
 				
@@ -149,9 +152,6 @@ public class MiniVM {
 		Writer out = new BufferedWriter(new FileWriter(fnames[1]));
 		out.write(output);
 		out.close();
-		
-		
-		
 	}
 	
 	public String parseFile(String fname) {
@@ -246,7 +246,6 @@ public class MiniVM {
 		match("OPENPARENS", ast.get(1));
 		String id = id(ast.get(2));
 		match("CLOSEPARENS", ast.get(3));
-		match("SEMICOLON", ast.get(4));
 		
 		// Implement maxfreq
 		
@@ -273,7 +272,7 @@ public class MiniVM {
 		match("ASCII-STR", ast);
 		
 		String ascii = ast.value;
-		ascii = ascii.substring(1, ascii.length()-2);
+		ascii = ascii.substring(1, ascii.length()-1);
 		return ascii;
 	}
 	
@@ -412,7 +411,7 @@ public class MiniVM {
 	public Lexer regex(AST ast) throws Exception {
 		match("REGEX", ast);
 		
-		String regex = ast.value.substring(1, ast.value.length()-2);
+		String regex = ast.value.substring(1, ast.value.length()-1);
 		Lexer lexer = new Lexer("$REGEX (" + regex + ")");
 		
 		return lexer;
