@@ -100,7 +100,7 @@ public class MiniVM {
 		String content = parseFile(fnames[0]);
 		lexer.tokenize(content);
 		
-		while(!lexer.peek().token_id.equals("eoi")){
+		while(lexer.hasNext("REGEX")) {
 			Token token = lexer.next("REGEX");
 			lexer.replace(token, ascii_str);
 		}
@@ -109,7 +109,6 @@ public class MiniVM {
 		Writer out = new BufferedWriter(new FileWriter(fnames[1]));
 		out.write(output);
 		out.close();
-		
 	}
 
 	/*
@@ -154,16 +153,14 @@ public class MiniVM {
 		out.close();
 	}
 	
-	public String parseFile(String fname) {
+	public String parseFile(String fname) throws Exception {
 		Scanner in;
 		String code = "";
-		try {
-			in = new Scanner(new File(fname));
-			code = in.useDelimiter("\\Z").next();
-			in.close();
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		}
+		
+		in = new Scanner(new File(fname));
+		code = in.useDelimiter("\\Z").next();
+		in.close();
+		
 		return code;
 	}
 	
