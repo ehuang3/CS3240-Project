@@ -56,4 +56,8 @@ public class Variable {
 	public StringMatchList getStringMatchList() {
 		return type == var_type._string_match_list ? list : null;
 	}
+	
+	public String toString() {
+		return name + " = " + (type == var_type._int ? number : list);
+	}
 }
