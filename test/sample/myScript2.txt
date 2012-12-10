@@ -5,8 +5,7 @@ number = find '([0-9])+' in "test/sample/myInput.txt";
 upper = find ' [A-Z]([a-zA-Z]|[0-9])*(\.|\,)+' in "test/sample/myInput.txt";
 lower = find ' [a-z]([a-zA-Z]|[0-9])*(\.|\,)+' in "test/sample/myInput.txt";
 upUlow = find ' [A-Z]([a-zA-Z]|[0-9])*(\.|\,)+' in "test/sample/myInput.txt" union find ' [a-z]([a-zA-Z]|[0-9])*(\.|\,)+' in "test/sample/myInput.txt";
-ParupUlow = ( find ' [A-Z]([a-zA-Z]|[0-9])*(\.|\,)+' in "test/sample/myInput.txt" union find ' [a-z]([a-zA-Z]|[0-9])*(\.|\,)+' in "test/sample/myInput.txt" );
-
+ParupUlow = find ' [A-Z]([a-zA-Z]|[0-9])*(\.|\,)+' in "test/sample/myInput.txt" union find ' [a-z]([a-zA-Z]|[0-9])*(\.|\,)+' in "test/sample/myInput.txt";
 print(sqrBrkN);
 print( find '\[[0-9]+\]' in "test/sample/myInput.txt" );
 print(n_sqrBrkN);
