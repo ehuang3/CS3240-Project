@@ -1,0 +1,3 @@
+begin
+replace '(aa)' with "XX" in "checkReplaceInput.txt" >! "checkReplaceOutput.txt";
+end

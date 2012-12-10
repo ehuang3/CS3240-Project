@@ -3,4 +3,5 @@ upper = find ' [A-Z]([a-zA-Z]|[0-9])*(\.|\,)+' in "checkFindInput.txt";
 n_upper = #upper
 print(n_upper);
 maxfreq = maxfreqstring(upper);
+print(maxfreq);
 end
