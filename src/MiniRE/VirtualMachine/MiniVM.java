@@ -85,7 +85,7 @@ public class MiniVM {
 	/*
 	 * Input AST is <statement>, use the children of statement
 	 */
-	public void replace(AST ast) throws IOException{
+	public void replace(AST ast) throws Exception{
 		match("REPLACE", ast.get(0));
 		Lexer lexer = regex(ast.get(1));
 		match("WITH", ast.get(2));
@@ -112,7 +112,7 @@ public class MiniVM {
 	/*
 	 * Input AST is <statement>, use the children of statement
 	 */
-	public void recursivereplace(AST ast) throws IOException {
+	public void recursivereplace(AST ast) throws Exception {
 		match("RECREP", ast.get(0));
 		Lexer lexer = regex(ast.get(1));
 		match("WITH", ast.get(2));
@@ -175,13 +175,13 @@ public class MiniVM {
 	 * <statement> --
 	 * ID = <statement-righthand>;
 	 */
-	public void assign_expr(AST ast) {
+	public void assign_expr(AST ast) throws Exception {
 		String id = id(ast.get(0));
 		match("EQ", ast.get(1));
 		Variable var = statement_righthand(ast.get(2));
 		match("SEMICOLON", ast.get(3));
 		
-		// TODO: Implement assign statement
+		symbol_table.put(id, var);
 	}
 	
 	public String id(AST ast) throws Exception {
@@ -193,14 +193,13 @@ public class MiniVM {
 	/*
 	 * Input AST is <statement>, use the children of statement
 	 */
-	public void print(AST ast) {
+	public void print(AST ast) throws Exception {
 		match("PRINT", ast.get(0));
 		match("OPENPARENS", ast.get(1));
 		List<Variable> exp_list = exp_list(ast.get(2));
 		match("CLOSEPARENS", ast.get(3));
 		match("SEMICOLON", ast.get(4));
 		
-		// TODO: Implement print
 		for(Variable var : exp_list) {
 			System.out.println(var);
 		}
@@ -228,11 +227,11 @@ public class MiniVM {
 	/*
 	 * Input AST is <statement-righthand>, use the children
 	 */
-	public Variable hash(AST ast) {
+	public Variable hash(AST ast) throws Exception {
 		match("HASH", ast.get(0));
 		Variable var = exp(ast.get(1));
 		
-		// TODO: Implement #<exp>
+		// Implement #<exp>
 		StringMatchList sml = var.getStringMatchList();
 		var = new Variable(sml.size());
 		
@@ -242,14 +241,14 @@ public class MiniVM {
 	/*
 	 * Input AST is <statement-righthand>, use the children of statement
 	 */
-	public Variable maxfreq(AST ast) {
+	public Variable maxfreq(AST ast) throws Exception {
 		match("MAXFREQ", ast.get(0));
 		match("OPENPARENS", ast.get(1));
 		String id = id(ast.get(2));
 		match("CLOSEPARENS", ast.get(3));
 		match("SEMICOLON", ast.get(4));
 		
-		// TODO: Implement maxfreq
+		// Implement maxfreq
 		
 		Variable var = symbol_table.get(id);
 		StringMatchList sml = var.getStringMatchList();
@@ -368,7 +367,7 @@ public class MiniVM {
 		
 		Variable var = new Variable(new StringMatchList());
 		
-		// TODO: Implement term
+		// Implement term
 		Scanner in;
 		in = new Scanner(new File(fname));
 		String content = in.useDelimiter("\\Z").next();

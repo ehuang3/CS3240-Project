@@ -9,6 +9,14 @@ public class StringMatch {
 	public String value;
 	public List<StringMatchInfo> info;
 	
+	public StringMatch(StringMatch other) {
+		value = other.value;
+		info = new LinkedList<StringMatchInfo>();
+		for(StringMatchInfo smi : other.info) {
+			info.add(smi);
+		}
+	}
+	
 	public StringMatch(String fn, Token m) {
 		this(m.value, fn, m.line_num, m.start_pos);
 	}
