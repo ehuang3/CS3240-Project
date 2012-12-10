@@ -3,9 +3,15 @@ package MiniRE.VirtualMachine;
 import java.util.LinkedList;
 import java.util.List;
 
+import Generator.Lexer.Token;
+
 public class StringMatch {
 	public String value;
 	public List<StringMatchInfo> info;
+	
+	public StringMatch(String fn, Token m) {
+		this(m.value, fn, m.line_num, m.start_pos);
+	}
 	
 	public StringMatch(String val, String fn, int line, int start) {
 		this(val, fn, line, start, start + val.length());

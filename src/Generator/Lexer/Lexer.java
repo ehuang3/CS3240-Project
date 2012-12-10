@@ -21,6 +21,7 @@ public class Lexer {
 	private String code;  // Input code to tokenize
 	private String skip;  // Characters to skip, defaults to {space, tab, newline, carriage-return}
 	private int pos;	  // Position of lexer in code
+	private int line_num; // Line number of lexer in code
 	
 	public static boolean verbose = true;  // Prints out matches
 	
@@ -41,6 +42,8 @@ public class Lexer {
 		spec = lexicalSpec;
 		skip = " \n\t\r";
 		code = "";
+		pos = 0;
+		line_num = 1;
 		init();
 	}
 	
@@ -137,6 +140,7 @@ public class Lexer {
 	
 	public void reset() {
 		pos = 0;
+		line_num = 1;
 	}
 	
 	/**
@@ -217,6 +221,14 @@ public class Lexer {
 		pos = saved_pos;
 		
 		return token;
+	}
+	
+	public boolean hasNext() {
+		return !peek().token_id.equals("eoi");
+	}
+	
+	public boolean hasNext(String token_id) {
+		return !peek(token_id).token_id.equals("eoi");
 	}
 	
 	/**
@@ -332,17 +344,17 @@ public class Lexer {
 	 */
 	public Token next(String[] ids, boolean skipNonMatchable) {
 		if(pos >= code.length()) {
-			return new Token("eoi", "", code.length());
+			return new Token("eoi", "", -1, code.length());
 		}
 		
 		Token token;
 		// Initialize token to correct failure value
 		if(skipNonMatchable) {
 			// On no successful match, we expect to be at 'eoi' token
-			token = new Token("eoi", "", code.length());
+			token = new Token("eoi", "", -1, code.length());
 		} else {
 			// On no successful match, we expect to return 'epsilon' token
-			token = new Token("epsilon", "", code.length());  // Correct epsilon position later
+			token = new Token("epsilon", "", -1, code.length());  // Correct epsilon position later
 		}
 		
 		skip();  // Pre-skip white space
@@ -357,7 +369,7 @@ public class Lexer {
 				String value = dfa.walk(code.substring(i));
 				if(token.value.length() < value.length() &&
 						i <= token.start_pos) {
-					token = new Token(dfa.id(), value, i);
+					token = new Token(dfa.id(), value, line_num, i);
 					break;  // Exit on first successful match
 							// Order of ids matters
 				}
@@ -367,7 +379,7 @@ public class Lexer {
 		}
 		// Correct position of epsilon token
 		if(token.token_id.equals("epsilon")) {
-			token = new Token("epsilon", "", pos);
+			token = new Token("epsilon", "", line_num, pos);
 		}
 		pos = token.start_pos + token.value.length();
 		skip();  // Post-skip white space
@@ -381,6 +393,9 @@ public class Lexer {
 	private void skip() {
 		while(pos < code.length() &&
 				skip.contains(code.substring(pos, pos+1))) {
+			if(code.charAt(pos) == '\n') {
+				line_num++;
+			}
 			pos++;
 		}
 	}

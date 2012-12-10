@@ -1,7 +1,11 @@
 package MiniRE.VirtualMachine;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Scanner;
 import java.util.TreeMap;
 
 import Generator.Lexer.Lexer;
@@ -69,7 +73,6 @@ public class MiniVM {
 		case "PRINT" :
 			print(ast);
 			break;
-		
 		}
 	}
 	
@@ -117,8 +120,9 @@ public class MiniVM {
 		// TODO: Implement assign statement
 	}
 	
-	public String id(AST ast) {
+	public String id(AST ast) throws Exception {
 		match("ID", ast);
+		
 		return ast.value;
 	}
 	
@@ -133,6 +137,9 @@ public class MiniVM {
 		match("SEMICOLON", ast.get(4));
 		
 		// TODO: Implement print
+		for(Variable var : exp_list) {
+			System.out.println(var);
+		}
 	}
 	
 	public Variable statement_righthand(AST ast) throws Exception {
@@ -150,6 +157,40 @@ public class MiniVM {
 			var = maxfreq(ast);
 			break;
 		}
+		
+		return var;
+	}
+	
+	/*
+	 * Input AST is <statement-righthand>, use the children
+	 */
+	public Variable hash(AST ast) {
+		match("HASH", ast.get(0));
+		Variable var = exp(ast.get(1));
+		
+		// TODO: Implement #<exp>
+		StringMatchList sml = var.getStringMatchList();
+		var = new Variable(sml.size());
+		
+		return var;
+	}
+	
+	/*
+	 * Input AST is <statement-righthand>, use the children of statement
+	 */
+	public Variable maxfreq(AST ast) {
+		match("MAXFREQ", ast.get(0));
+		match("OPENPARENS", ast.get(1));
+		String id = id(ast.get(2));
+		match("CLOSEPARENS", ast.get(3));
+		match("SEMICOLON", ast.get(4));
+		
+		// TODO: Implement maxfreq
+		
+		Variable var = symbol_table.get(id);
+		StringMatchList sml = var.getStringMatchList();
+		
+		var = new Variable(sml.maxFreq());
 		
 		return var;
 	}
@@ -186,78 +227,131 @@ public class MiniVM {
 
 	}
 	
-	public void exp_list(AST ast) throws Exception{
+	public List<Variable> exp_list(AST ast) throws Exception{
 		match("exp-list", ast);
 		
-		exp(ast.get(0));
-		exp_list_tail(ast.get(0));
-
+		List<Variable> exp_list = new LinkedList<Variable>();
+		
+		exp_list.add(exp(ast.get(0)));
+		exp_list = exp_list_tail(ast.get(1), exp_list);
+		
+		return exp_list;
 	}
 	
-	public void exp_list_tail(AST ast) throws Exception{
+	public List<Variable> exp_list_tail(AST ast, List<Variable> exp_list) throws Exception{
 		match("exp-list-tail", ast);
 		
-		// comma?????
+		switch (ast.get(0).rule_id) {
+		case "COMMA" :
+			match("COMMA", ast.get(0));
+			exp_list.add(exp(ast.get(1)));
+			exp_list = exp_list_tail(ast.get(2), exp_list);
+			break;
+		default :
+			// Do nothing
+		}
+		
+		return exp_list;
 	}
 	
-	public void exp(AST ast) throws Exception{
+	public Variable exp(AST ast) throws Exception{
 		match("exp", ast);
 		
+		Variable var = null;
 		switch(ast.get(0).rule_id) {
 		case "ID" :
-			match("ID", ast.get(0));
+			String id = id(ast.get(0));
+			var = symbol_table.get(id);
 			break;
 		case "exp" :
-			exp(ast.get(0));
+			var = exp(ast.get(0));
 			break;
 		case "term" :
-			term(ast.get(0));
-			exp_tail(ast.get(1));
+			var = term(ast.get(0));
+			var = exp_tail(ast.get(1), var);
 			break;
 		}
+		
+		return var;
 	}
 	
-	public void exp_tail(AST ast) throws Exception{
+	public Variable exp_tail(AST ast, Variable lhs) throws Exception{
 		match("exp-tail", ast);
 		
+		Variable var = null;
 		switch(ast.get(0).rule_id) {
 		case "bin-op" :
-			bin_op(ast.get(0));
-			term(ast.get(1));
-			exp_tail(ast.get(2));
+			Variable rhs = term(ast.get(1));
+			var = bin_op(ast.get(0), lhs, rhs);
+			var = exp_tail(ast.get(2), var);
 			break;
 		case "epsilon" :
 			match("epsilon", ast.get(0));
+			var = lhs;
 			break;
 		}
-
+		
+		return var;
 	}
 	
-	public Variable term(AST ast) throws Exception{
+	public Variable term(AST ast) throws Exception {
 		match("term", ast);
 		
+		match("FIND", ast.get(0));
+		Lexer lexer = regex(ast.get(1));
+		match("IN", ast.get(2));
+		String fname = file_name(ast.get(3));
 		
+		Variable var = new Variable(new StringMatchList());
+		
+		// TODO: Implement term
+		Scanner in;
+		in = new Scanner(new File(fname));
+		String content = in.useDelimiter("\\Z").next();
+		in.close();
+		
+		lexer.tokenize(content);
+		while(lexer.hasNext("REGEX")) {
+			var.getStringMatchList().add(new StringMatch(fname, lexer.next("REGEX")));
+		}
+		
+		return var;
 	}
 	
-	public String file_name(AST ast) throws Exception{
+	public String file_name(AST ast) throws Exception {
 		match("file-name", ast);
 		
 		return ascii_str(ast.get(0));
 	}
 	
-	public void bin_op(AST ast) throws Exception{
+	public Variable bin_op(AST ast, Variable lhs, Variable rhs) throws Exception {
 		match("bin-op", ast);
 		
+		Variable var = null;
 		switch(ast.get(0).rule_id){
 		case "DIFF" :
 			match("DIFF", ast.get(0));
+			var = new Variable(lhs.getStringMatchList().diff(rhs.getStringMatchList()));
 			break;
 		case "UNION" :
 			match("UNION", ast.get(0));
+			var = new Variable(lhs.getStringMatchList().union(rhs.getStringMatchList()));
 			break;
 		case "INTERS" :
 			match("INTERS", ast.get(0));
+			var = new Variable(lhs.getStringMatchList().inters(rhs.getStringMatchList()));
 			break;
 		}
+		
+		return var;
+	}
+	
+	public Lexer regex(AST ast) throws Exception {
+		match("REGEX", ast);
+		
+		String regex = ast.value.substring(1, ast.value.length()-2);
+		Lexer lexer = new Lexer("$REGEX (" + regex + ")");
+		
+		return lexer;
 	}
 }
