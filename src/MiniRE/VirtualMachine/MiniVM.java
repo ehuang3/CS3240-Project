@@ -92,22 +92,32 @@ public class MiniVM {
 	public String[] file_names(AST ast) throws Exception{
 		match("file-names", ast);
 		
-		//TODO
+		String[] files = new String[2];
+		files[0] = source_file(ast.get(0));
+		match("GRTNOT", ast.get(1));
+		files[1] = destination_file(ast.get(2));
 		
-		return null;
+		return files;
+	}
+	
+	public String ascii_str(AST ast)  {
+		match("ASCII-STR", ast);
+		
+		String ascii = ast.value;
+		ascii = ascii.substring(1, ascii.length()-2);
+		return ascii;
 	}
 	
 	public String source_file(AST ast) throws Exception{
 		match("source-file", ast);
 		
-		match("ASCII-STR", ast.get(0));		
-		return null;
+		return ascii_str(ast.get(0));
 	}
 	
-	public void destination_file(AST ast) throws Exception{
+	public String destination_file(AST ast) throws Exception{
 		match("destination-file", ast);
 		
-		match("ASCII-STR", ast.get(0));
+		return ascii_str(ast.get(0));
 
 	}
 	
@@ -167,9 +177,7 @@ public class MiniVM {
 	public String file_name(AST ast) throws Exception{
 		match("file-name", ast);
 		
-		//TODO
-		
-		return null;
+		return ascii_str(ast.get(0));
 	}
 	
 	public void bin_op(AST ast) throws Exception{
