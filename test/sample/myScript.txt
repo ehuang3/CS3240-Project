@@ -1,27 +1,24 @@
-/**
-Checking that every function of MiniRE briefly works correctly or not 
-**/
 
 begin
-upper = find ' [A-Z]([a-zA-Z]|[0-9])*(\.|\,)+' in "myInput.txt";
+upper = find ' [A-Z]([a-zA-Z]|[0-9])*(\.|\,)+' in "test/sample/myInput.txt";
 n_upper = #upper;
 print(upper);
 print(n_upper);
 
-lower = find ' [a-z]([a-zA-Z]|[0-9])*(\.|\,)+' in "myInput.txt";
+lower = find ' [a-z]([a-zA-Z]|[0-9])*(\.|\,)+' in "test/sample/myInput.txt";
 print(lower);
 
-upUlow = find ' [A-Z]([a-zA-Z]|[0-9])*(\.|\,)+' in "myInput.txt" union find ' [a-z]([a-zA-Z]|[0-9])*(\.|\,)+' in "myInput.txt";
+upUlow = find ' [A-Z]([a-zA-Z]|[0-9])*(\.|\,)+' in "test/sample/myInput.txt" union find ' [a-z]([a-zA-Z]|[0-9])*(\.|\,)+' in "test/sample/myInput.txt";
 print(upUlow);
 
-upper2 = find ' [A-Z]([a-zA-Z]|[0-9])*(\.|\,)+' in "myInput.txt" union find ' [a-z]([a-zA-Z]|[0-9])*(\.|\,)+' in "myInput.txt" diff find ' [a-z]([a-zA-Z]|[0-9])*(\.|\,)+' in "myInput.txt";
+upper2 = find ' [A-Z]([a-zA-Z]|[0-9])*(\.|\,)+' in "test/sample/myInput.txt" union find ' [a-z]([a-zA-Z]|[0-9])*(\.|\,)+' in "myInput.txt" diff find ' [a-z]([a-zA-Z]|[0-9])*(\.|\,)+' in "test/sample/myInput.txt";
 print(upper2);
 
-lower2 = find ' [A-Z]([a-zA-Z]|[0-9])*(\.|\,)+' in "myInput.txt" union find ' [a-z]([a-zA-Z]|[0-9])*(\.|\,)+' in "myInput.txt" inters find ' [a-z]([a-zA-Z]|[0-9])*(\.|\,)+' in "myInput.txt";
+lower2 = find ' [A-Z]([a-zA-Z]|[0-9])*(\.|\,)+' in "test/sample/myInput.txt" union find ' [a-z]([a-zA-Z]|[0-9])*(\.|\,)+' in "myInput.txt" inters find ' [a-z]([a-zA-Z]|[0-9])*(\.|\,)+' in "test/sample/myInput.txt";
 print(lower2);
 
 maxUp = maxfreqstring(upper);
 print(maxUp);
-replace '[0-9]+' with "XXXXXX" in "myInput.txt" >! "myOutputReplace.txt";
-recursivereplace '(Chr|istmas)' with "YYY" in "myInput.txt" >! "myOutputRecursiveReplace.txt";
+replace '[0-9]+' with "XXXXXX" in "test/sample/myInput.txt" >! "test/sample/myOutputReplace.txt";
+recursivereplace '(Chr|istmas)' with "YYY" in "test/sample/myInput.txt" >! "test/sample/myOutputRecursiveReplace.txt";
 end

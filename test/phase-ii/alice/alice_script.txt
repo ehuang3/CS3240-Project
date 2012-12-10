@@ -7,4 +7,8 @@ n_alice = find 'Alice' in "test/phase-ii/alice/chap4.txt";
 print(n_alice);
 max_str1 = find '([a-z])+' in "test/phase-ii/alice/chap4.txt";
 max_str1 = #max_str1;
+
+the = find 'the' in "test/phase-ii/alice/chap1.txt" union find 'the' in "test/phase-ii/alice/chap2.txt";
+n_the = #the;
+print(the, n_the);
 end
