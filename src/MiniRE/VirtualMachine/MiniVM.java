@@ -102,10 +102,19 @@ public class MiniVM {
 		}
 		
 		String output = lexer.code();
-		Writer out = new BufferedWriter(new FileWriter(fnames[1]));
-		out.write(output);
-		out.close();
+		Writer writer = null;
 		
+		if(new File(fnames[1]).exists()){
+			writer = new BufferedWriter(new FileWriter(fnames[1]));
+			writer.write(output);
+			writer.close();
+		}
+		else {
+			File out = new File(fnames[1]);
+			writer = new BufferedWriter(new FileWriter(fnames[1]));
+            writer.write(output);
+		}
+
 	}
 	
 
@@ -146,9 +155,18 @@ public class MiniVM {
 		}
 		
 		String output = lexer.code();
-		Writer out = new BufferedWriter(new FileWriter(fnames[1]));
-		out.write(output);
-		out.close();
+		Writer writer = null;
+		
+		if(new File(fnames[1]).exists()){
+			writer = new BufferedWriter(new FileWriter(fnames[1]));
+			writer.write(output);
+			writer.close();
+		}
+		else {
+			File out = new File(fnames[1]);
+			writer = new BufferedWriter(new FileWriter(fnames[1]));
+            writer.write(output);
+		}
 		
 		
 		
