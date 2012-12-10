@@ -1,0 +1,4 @@
+begin
+upper = find ' [A-Z]([a-zA-Z]|[0-9])*(\.|\,)+' in "checkFindInput.txt";
+print(upper);
+end
