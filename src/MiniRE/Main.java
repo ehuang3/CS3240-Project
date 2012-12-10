@@ -1,4 +1,4 @@
-import MiniRE.AST;
+package MiniRE;
 import MiniRE.RecursiveDescent.MiniParser;
 import MiniRE.VirtualMachine.MiniVM;
 
@@ -9,7 +9,7 @@ public class Main
 	{
 		String re = args[1];
 		MiniVM mvm = new MiniVM();
-		MiniParser mp = new MiniParser(); 
+		MiniParser mp = new MiniParser();
 		AST tree = mp.parseFile(re);
 		mvm.run(tree);
 	}
