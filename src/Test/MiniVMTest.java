@@ -20,7 +20,7 @@ public class MiniVMTest {
 		MiniVM mini = new MiniVM();
 		MiniParser parser = new MiniParser();
 		
-		AST ast = parser.parseFile("test/phase-ii/alice/alice_script.txt");
+		AST ast = parser.parseFile("test/phase-ii/checkReplaceScript.txt");
 		
 		try {
 			mini.run(ast);

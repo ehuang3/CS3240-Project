@@ -2,7 +2,6 @@ package MiniRE.VirtualMachine;
 
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.Writer;
 import java.util.LinkedList;
@@ -10,8 +9,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 import java.util.TreeMap;
-import java.io.FileOutputStream;
-import java.io.IOException;
 
 import Generator.Lexer.Lexer;
 import Generator.Lexer.Token;
@@ -20,16 +17,21 @@ import MiniRE.AST;
 public class MiniVM {
 	Map<String, Variable> symbol_table;
 	
+	public boolean debug;
+	
 	public MiniVM() {
 		symbol_table = new TreeMap<>();
+		debug = false;
 	}
 	
 	public void match(String rule_id, AST ast) throws Exception {
 		if(ast == null || !rule_id.equals(ast.rule_id)) {
-			System.out.println("MiniVM failed: " + rule_id + " was " + ast.rule_id);
+			if(debug)
+				System.out.println("MiniVM failed: " + rule_id + " was " + ast.rule_id);
 			throw new Exception();
 		} else {
-			System.out.println("MiniVM matched: " + rule_id);
+			if(debug)
+				System.out.println("MiniVM matched: " + rule_id);
 		}
 	}
 	

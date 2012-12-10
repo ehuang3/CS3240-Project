@@ -65,4 +65,10 @@ public class NFAFactoryTest {
 		System.out.println(NFASim.parse(test, code));
 		assertEquals(code, NFASim.parse(test, code).token);
 	}
+	
+	@Test
+	public void testChristmas() {
+		@SuppressWarnings("unused")
+		NFA test = Factory.build("$REGEX ((Chr|istmas))");
+	}
 }

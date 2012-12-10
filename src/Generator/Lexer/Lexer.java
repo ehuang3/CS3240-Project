@@ -23,7 +23,7 @@ public class Lexer {
 	private int pos;	  // Position of lexer in code
 	private int line_num; // Line number of lexer in code
 	
-	public static boolean verbose = true;  // Prints out matches
+	public static boolean verbose = false;  // Prints out matches
 	
 	public Lexer() {
 		this("");

@@ -86,7 +86,7 @@ public class NFAFactory {
 	private NFA unary_list() {
 		NFA nfa = unary_expr();
 		NFA unary = unary_expr();
-		while( op_code.or  != T.peek().operand &&
+		while( //op_code.or  != T.peek().operand &&  // Next token may be | e.g. (chr|istmas)
 			         unary != null				  ) {
 			nfa.and(unary);
 			unary = unary_expr();
