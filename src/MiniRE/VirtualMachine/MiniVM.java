@@ -26,8 +26,7 @@ public class MiniVM {
 	
 	public void match(String rule_id, AST ast) throws Exception {
 		if(ast == null || !rule_id.equals(ast.rule_id)) {
-			if(debug)
-				System.out.println("MiniVM failed: " + rule_id + " was " + ast.rule_id);
+			System.out.println("MiniVM failed: " + rule_id + " was " + ast.rule_id);
 			throw new Exception();
 		} else {
 			if(debug)
