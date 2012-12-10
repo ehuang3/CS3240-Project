@@ -11,15 +11,29 @@ public class Variable {
 	Integer number;
 	StringMatchList list;
 	
+	String name;
+	
+	public Variable(String name, int n) {
+		this(name, n, null);
+	}
+	
+	public Variable(String name, StringMatchList l) {
+		this(name, null, l);
+	}
+	
 	public Variable(int n) {
-		type = var_type._int;
-		number = n;
-		list = null;
+		this("", n, null);
 	}
 	
 	public Variable(StringMatchList l) {
-		type = var_type._string_match_list;
-		number = 0;
+		this("", null, l);
+	}
+	
+	public Variable(String name, Integer n, StringMatchList l) {
+		assert(name == null ^ l == null) : "FAILED ASSERT IN VARIABLE()";
+		type = n != null ? var_type._int : var_type._string_match_list;
+		this.name = name;
+		number = n;
 		list = l;
 	}
 	
@@ -41,5 +55,9 @@ public class Variable {
 	
 	public StringMatchList getStringMatchList() {
 		return type == var_type._string_match_list ? list : null;
+	}
+	
+	public String toString() {
+		return name + " = " + (type == var_type._int ? number : list);
 	}
 }

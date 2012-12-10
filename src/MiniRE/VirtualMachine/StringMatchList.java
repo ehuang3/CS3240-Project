@@ -17,12 +17,12 @@ public class StringMatchList {
 	
 	public StringMatchList(StringMatch m) {
 		this();
-		matches.put(m.value, m);
+		matches.put(m.value, new StringMatch(m));
 	}
 	
 	public void add(StringMatch m) {
 		if(!matches.containsKey(m.value)) {
-			matches.put(m.value, m);
+			matches.put(m.value, new StringMatch(m));
 		} else {
 			StringMatch match = matches.get(m.value);
 			for(StringMatchInfo smi : m.info) {
