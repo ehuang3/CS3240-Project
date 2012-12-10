@@ -31,6 +31,7 @@ public class MiniVM {
 	}
 	
 	public void run(AST ast) throws Exception {
+		symbol_table.clear();
 		MiniRE_program(ast);
 	}
 	
@@ -107,7 +108,6 @@ public class MiniVM {
 		out.close();
 		
 	}
-	
 
 	/*
 	 * Input AST is <statement>, use the children of statement
@@ -154,7 +154,6 @@ public class MiniVM {
 		
 	}
 	
-	
 	public String parseFile(String fname) {
 		Scanner in;
 		String code = "";
@@ -168,7 +167,6 @@ public class MiniVM {
 		return code;
 	}
 	
-	
 	/*
 	 * Input AST is <statement>, use the children of statement
 	 * 
@@ -180,6 +178,8 @@ public class MiniVM {
 		match("EQ", ast.get(1));
 		Variable var = statement_righthand(ast.get(2));
 		match("SEMICOLON", ast.get(3));
+		
+		var.name = id;
 		
 		symbol_table.put(id, var);
 	}
