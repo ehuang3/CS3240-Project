@@ -1,10 +1,19 @@
 package MiniRE.VirtualMachine;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.Writer;
 import java.util.List;
 import java.util.Map;
+import java.util.Scanner;
 import java.util.TreeMap;
+import java.io.FileOutputStream;
+import java.io.IOException;
 
 import Generator.Lexer.Lexer;
+import Generator.Lexer.Token;
 import MiniRE.AST;
 
 public class MiniVM {
@@ -76,31 +85,89 @@ public class MiniVM {
 	/*
 	 * Input AST is <statement>, use the children of statement
 	 */
-	public void replace(AST ast) {
+	public void replace(AST ast) throws IOException{
 		match("REPLACE", ast.get(0));
 		Lexer lexer = regex(ast.get(1));
 		match("WITH", ast.get(2));
 		String ascii_str = ascii_str(ast.get(3));
 		match("IN", ast.get(4));
-		String fname = file_name(ast.get(5));
+		String[] fnames = file_names(ast.get(5));
 		
-		// TODO: Implement replace
+		String content = parseFile(fnames[0]);
+		lexer.tokenize(content);
+		
+		while(!lexer.peek().token_id.equals("eoi")){
+			Token token = lexer.next("REGEX");
+			lexer.replace(token, ascii_str);
+		}
+		
+		String output = lexer.code();
+		Writer out = new BufferedWriter(new FileWriter(fnames[1]));
+		out.write(output);
+		out.close();
+		
 	}
 	
+
 	/*
 	 * Input AST is <statement>, use the children of statement
 	 */
-	public void recursivereplace(AST ast) {
+	public void recursivereplace(AST ast) throws IOException {
 		match("RECREP", ast.get(0));
 		Lexer lexer = regex(ast.get(1));
 		match("WITH", ast.get(2));
 		String ascii_str = ascii_str(ast.get(3));
 		match("IN", ast.get(4));
-		String fname = file_name(ast.get(5));
+		String[] fnames = file_names(ast.get(5));
 		match("SEMICOLON", ast.get(6));
 		
-		// TODO: Implement recursivereplace
+		String content = parseFile(fnames[0]);
+		lexer.tokenize(content);
+		
+		int count = 1; //counts how many regex has been replaced in one run.
+		
+		while(count != 0) {
+			count = 0;
+			
+			while(!lexer.peek().token_id.equals("eoi")){
+				
+				Token token = lexer.next("REGEX");
+				
+				if(token.equals(ascii_str)){
+					continue;
+				}
+				else {
+					lexer.replace(token,  ascii_str);
+					count++;
+				}
+			}
+			
+			lexer.reset();
+		}
+		
+		String output = lexer.code();
+		Writer out = new BufferedWriter(new FileWriter(fnames[1]));
+		out.write(output);
+		out.close();
+		
+		
+		
 	}
+	
+	
+	public String parseFile(String fname) {
+		Scanner in;
+		String code = "";
+		try {
+			in = new Scanner(new File(fname));
+			code = in.useDelimiter("\\Z").next();
+			in.close();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+		return code;
+	}
+	
 	
 	/*
 	 * Input AST is <statement>, use the children of statement
@@ -165,7 +232,7 @@ public class MiniVM {
 		return files;
 	}
 	
-	public String ascii_str(AST ast)  {
+	public String ascii_str(AST ast) throws Exception {
 		match("ASCII-STR", ast);
 		
 		String ascii = ast.value;
